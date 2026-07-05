@@ -231,7 +231,7 @@
         }
 
         /* =========================================================
-           ALERTS (Идеальная копия, маленькая)
+           ALERTS (Маленькое окно, русский язык, прозрачные кнопки)
            ========================================================= */
         .modal-alerts-container {
             display: none;
@@ -239,7 +239,7 @@
             z-index: 9998;
             top: 80px; 
             right: 0px;
-            width: 260px; /* Окно уменьшено! */
+            width: 280px;
         }
         .modal-alerts-container.active {
             display: block;
@@ -267,11 +267,11 @@
             letter-spacing: 0.5px;
         }
         
-        /* Круглая кнопка закрытия в углу (Сделана через CSS) */
+        /* Круглый серый крестик */
         .modal-alerts-close {
-            background: #7d746d; /* Серый цвет */
+            background: #7d746d;
             border: none;
-            border-radius: 50%; /* Идеальный круг */
+            border-radius: 50%;
             width: 24px;
             height: 24px;
             display: flex;
@@ -280,7 +280,6 @@
             cursor: pointer;
             color: #fff;
             font-size: 18px;
-            font-family: sans-serif;
             font-weight: bold;
             padding-bottom: 2px;
             transition: 0.2s;
@@ -297,29 +296,29 @@
             justify-content: space-between;
             align-items: center;
             color: #1a1816;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
         }
         .modal-alerts-actions {
             display: flex;
             gap: 4px;
         }
+        
+        /* Кнопки теперь полностью прозрачные, без фона */
         .alert-action-btn {
-            background: #5c5750;
-            border: 1px solid #4a4741;
-            border-radius: 3px;
+            background: transparent;
+            border: none;
             cursor: pointer;
-            width: 24px;
-            height: 24px;
+            padding: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: 0.2s;
         }
-        .alert-action-btn:hover { filter: brightness(1.2); }
+        .alert-action-btn:hover { transform: scale(1.1); }
         .alert-action-btn img {
-            width: 14px;
-            height: 14px;
+            width: 18px;
+            height: 18px;
             object-fit: contain;
         }
 
@@ -734,22 +733,21 @@
         </div>
     </div>
 
-    <!-- ALERTS (Идеальное окно) -->
+    <!-- ALERTS (Русский, прозрачные кнопки) -->
     <div class="modal-alerts-container" id="alertsModal">
         <div class="modal-alerts">
             <div class="modal-alerts-header">
-                <div class="modal-alerts-title">ALERTS (1)</div>
+                <div class="modal-alerts-title">УВЕДОМЛЕНИЯ (1)</div>
                 <!-- Круглый серый крестик -->
                 <button class="modal-alerts-close" onclick="closeAlerts()">×</button>
             </div>
             <div class="modal-alerts-body">
-                <span>YOU HAVE NEW ITEMS!</span>
+                <span>У ВАС ЕСТЬ НОВЫЕ ПРЕДМЕТЫ!</span>
                 <div class="modal-alerts-actions">
-                    <!-- Кнопка Глаза -->
+                    <!-- Прозрачные кнопки -->
                     <button class="alert-action-btn" onclick="openItemFound()">
                         <img src="images/icon/eye.png" alt="View">
                     </button>
-                    <!-- Кнопка Красного Крестика (из твоего close.png) -->
                     <button class="alert-action-btn" onclick="closeAlerts()">
                         <img src="images/icon/close.png" alt="Close">
                     </button>
@@ -761,11 +759,11 @@
     <!-- МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ ПРЕДМЕТА -->
     <div class="modal-item-overlay" id="itemFoundModal">
         <div class="modal-item-box">
-            <div class="modal-item-title">NEW ITEM ACQUIRED!</div>
-            <div class="modal-item-subtitle">YOU UNBOXED:</div>
+            <div class="modal-item-title">НОВЫЙ ПРЕДМЕТ ПОЛУЧЕН!</div>
+            <div class="modal-item-subtitle">ВЫ ОТКРЫЛИ:</div>
             
             <div class="modal-item-content">
-                <div class="modal-item-id">ITEM<br>#14</div>
+                <div class="modal-item-id">ПРЕДМЕТ<br>#14</div>
                 
                 <div class="modal-item-image">
                     <img src="images/icon/Backpack_case.png" alt="Item">
@@ -773,10 +771,10 @@
                 
                 <div class="modal-item-details">
                     <div class="modal-item-name">THE CONCHEROR</div>
-                    <div class="modal-item-level">Level 5 Sashimono</div>
-                    <div class="modal-item-desc">With buff, some damage<br>Dished out by nearby teammates<br>Comes back as healing</div>
-                    <div class="modal-item-rarity">• Unusual Effect: Orbiting Fire</div>
-                    <div class="modal-item-trade">Tradable After Saturday, October 2, 2029 (0:00:00)</div>
+                    <div class="modal-item-level">Уровень 5 Сашими</div>
+                    <div class="modal-item-desc">С баффом, немного урона<br>Раздаётся рядом с тиммейтами<br>Возвращается как лечение</div>
+                    <div class="modal-item-rarity">• Необычный эффект: Парящий огонь</div>
+                    <div class="modal-item-trade">Можно обменять после субботы, 2 октября 2029 (0:00:00)</div>
                 </div>
 
                 <div class="modal-item-portrait">
@@ -785,9 +783,9 @@
             </div>
 
             <div class="modal-item-buttons">
-                <button class="modal-item-btn btn-prev">VIEW &lt; PREV</button>
-                <button class="modal-item-btn btn-resume" onclick="closeItemFound()">OK, RESUME GAME</button>
-                <button class="modal-item-btn btn-next">VIEW NEXT &gt;</button>
+                <button class="modal-item-btn btn-prev">ПРОСМОТР &lt; ПРЕД.</button>
+                <button class="modal-item-btn btn-resume" onclick="closeItemFound()">ОК, ПРОДОЛЖИТЬ</button>
+                <button class="modal-item-btn btn-next">ПРОСМОТР СЛЕД. &gt;</button>
             </div>
         </div>
     </div>
