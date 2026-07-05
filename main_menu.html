@@ -473,7 +473,6 @@
 
         <div class="bottom-nav">
             <div class="nav-buttons-left">
-                <!-- Обычные ссылки -->
                 <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./election_piece.html" class="game-btn">
                     <img src="images/icon/Backpack_case.png" alt="">
                     ПРЕДМЕТЫ
@@ -535,7 +534,6 @@
             const audioPlayer = document.getElementById('bgMusic');
             const musicBtn = document.getElementById('musicToggle');
 
-            // Восстанавливаем музыку при загрузке
             const savedTrack = localStorage.getItem('tf2_current_track');
             if (savedTrack !== null) {
                 currentTrackIndex = parseInt(savedTrack, 10);
@@ -544,20 +542,18 @@
             }
 
             setTimeout(() => {
-    document.getElementById('loadingScreen').classList.add('hidden');
-    document.getElementById('mainUI').classList.add('loaded');
-    
-    audioPlayer.src = tracks[currentTrackIndex];
-    audioPlayer.load();
-    
-    // Принудительно включаем при загрузке страницы
-    audioPlayer.play().catch(() => {
-        // Если сразу не получилось, пробуем еще раз чуть позже
-        setTimeout(() => {
-            audioPlayer.play().catch(() => {});
-        }, 500);
-    });
-}, 2000);
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('mainUI').classList.add('loaded');
+                
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                // Принудительный запуск с повторной попыткой
+                audioPlayer.play().catch(() => {
+                    setTimeout(() => {
+                        audioPlayer.play().catch(() => {});
+                    }, 500);
+                });
+            }, 2000);
 
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
