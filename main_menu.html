@@ -473,8 +473,8 @@
 
         <div class="bottom-nav">
             <div class="nav-buttons-left">
-                <!-- ЗАМЕНЯЕМ ССЫЛКИ НА ВЫЗОВ ФУНКЦИИ JS -->
-                <a href="#" class="game-btn" onclick="loadPage('election_piece.html'); return false;">
+                <!-- Обычные ссылки -->
+                <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./election_piece.html" class="game-btn">
                     <img src="images/icon/Backpack_case.png" alt="">
                     ПРЕДМЕТЫ
                 </a>
@@ -497,16 +497,11 @@
     </div>
 
     <script>
-        // =========================================================
-        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
-        // =========================================================
         document.addEventListener("DOMContentLoaded", function() {
             
-            // Фон
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
             document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${backgrounds[Math.floor(Math.random() * backgrounds.length)]}')`;
 
-            // Персонаж
             const classes = [
                 "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
                 "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
@@ -525,14 +520,12 @@
                 charImg.style.right = "30px";
             }
 
-            // Уровень
             let playerLevel = 4; 
             const medalImg = document.getElementById('levelMedal');
             document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
             medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
-            // Музыка
             const tracks = [
                 "sounds/main_menu/1.mp3",
                 "sounds/main_menu/2.mp3",
@@ -542,8 +535,13 @@
             const audioPlayer = document.getElementById('bgMusic');
             const musicBtn = document.getElementById('musicToggle');
 
-            // Случайный трек при старте
-            currentTrackIndex = Math.floor(Math.random() * tracks.length);
+            // Восстанавливаем музыку при загрузке
+            const savedTrack = localStorage.getItem('tf2_current_track');
+            if (savedTrack !== null) {
+                currentTrackIndex = parseInt(savedTrack, 10);
+            } else {
+                currentTrackIndex = Math.floor(Math.random() * tracks.length);
+            }
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
@@ -557,78 +555,13 @@
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+                localStorage.setItem('tf2_current_track', currentTrackIndex);
+                
                 audioPlayer.src = tracks[currentTrackIndex];
                 audioPlayer.load();
                 audioPlayer.play().catch(() => {});
             });
         });
-
-        // =========================================================
-        // ГЛОБАЛЬНАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ (ВНЕ DOMContentLoaded)
-        // =========================================================
-        window.loadPage = function(url) {
-            // Полный путь к файлу на GitHub
-            const fullPath = `https://gleb9zigalov0-create.github.io/TF2_M.E./${url}`;
-            
-            fetch(fullPath)
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    // Извлекаем стили
-                    const newStyles = doc.querySelectorAll('style');
-                    const head = document.head;
-                    const existingDynamicStyles = head.querySelectorAll('.dynamic-style');
-                    existingDynamicStyles.forEach(el => el.remove());
-
-                    newStyles.forEach(style => {
-                        const newStyle = document.createElement('style');
-                        newStyle.className = 'dynamic-style';
-                        newStyle.textContent = style.textContent;
-                        head.appendChild(newStyle);
-                    });
-
-                    // Извлекаем контент
-                    const newContent = doc.querySelector('.ui-container');
-                    if (newContent) {
-                        const mainUI = document.getElementById('mainUI');
-                        // Заменяем контент, но СОХРАНЯЕМ фон и персонажа
-                        const oldBg = mainUI.querySelector('.background-layer');
-                        const oldChar = mainUI.querySelector('.character-layer');
-                        
-                        mainUI.innerHTML = newContent.innerHTML;
-                        
-                        // Восстанавливаем фон и персонажа
-                        mainUI.prepend(oldChar);
-                        mainUI.prepend(oldBg);
-                        
-                        // Перехватываем кнопки BACK и перекидываем их на главную
-                        mainUI.querySelectorAll('.btn-back').forEach(btn => {
-                            btn.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                window.loadPage('main_menu.html');
-                            });
-                        });
-
-                        // Перехватываем ссылки на другие страницы в новом контенте
-                        mainUI.querySelectorAll('a[href$=".html"]').forEach(link => {
-                            const href = link.getAttribute('href');
-                            if (href && !href.startsWith('#')) {
-                                link.addEventListener('click', function(e) {
-                                    e.preventDefault();
-                                    window.loadPage(href);
-                                });
-                            }
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка загрузки:', error);
-                    // Если что-то пошло не так, пытаемся просто перейти по ссылке
-                    window.location.href = fullPath;
-                });
-        };
     </script>
 
 </body>
