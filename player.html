@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <audio id="bgMusic" loop></audio>
+    <script>
+        // Восстанавливаем трек из памяти
+        const tracks = [
+            "sounds/main_menu/1.mp3",
+            "sounds/main_menu/2.mp3",
+            "sounds/main_menu/3.mp3"
+        ];
+        let currentTrackIndex = 0;
+
+        const savedTrack = localStorage.getItem('tf2_current_track');
+        if (savedTrack !== null) {
+            currentTrackIndex = parseInt(savedTrack, 10);
+        } else {
+            currentTrackIndex = Math.floor(Math.random() * tracks.length);
+        }
+
+        const audio = document.getElementById('bgMusic');
+
+        // Функция запуска музыки
+        function startMusic() {
+            audio.src = tracks[currentTrackIndex];
+            audio.load();
+            audio.play().catch(() => {
+                setTimeout(() => {
+                    audio.play().catch(() => {});
+                }, 500);
+            });
+        }
+
+        // Запускаем при загрузке плеера
+        startMusic();
+
+        // Слушаем команды от главной страницы
+        window.addEventListener('message', function(event) {
+            if (event.data === 'next_track') {
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+                localStorage.setItem('tf2_current_track', currentTrackIndex);
+                startMusic();
+            } else if (event.data === 'start_music') {
+                startMusic();
+            }
+        });
+    </script>
+</body>
+</html>
