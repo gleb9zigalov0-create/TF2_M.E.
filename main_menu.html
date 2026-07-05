@@ -401,15 +401,12 @@
 </head>
 <body>
 
-    <!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР -->
     <audio id="bgMusic" loop></audio>
 
-    <!-- ЛОАДИНГ -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-text">Загрузка...</div>
     </div>
 
-    <!-- КОНТЕЙНЕР -->
     <div class="ui-container" id="mainUI">
         
         <div class="background-layer" id="menuBackground"></div>
@@ -567,9 +564,9 @@
         });
 
         // =========================================================
-        // СИСТЕМА ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ (БЕЗ ПЕРЕЗАГРУЗКИ И БЕЗ BASE)
+        // ГЛОБАЛЬНАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ (ВНЕ DOMContentLoaded)
         // =========================================================
-        function loadPage(url) {
+        window.loadPage = function(url) {
             // Полный путь к файлу на GitHub
             const fullPath = `https://gleb9zigalov0.github.io/TF2_M.E/${url}`;
             
@@ -610,7 +607,7 @@
                         mainUI.querySelectorAll('.btn-back').forEach(btn => {
                             btn.addEventListener('click', function(e) {
                                 e.preventDefault();
-                                loadPage('main_menu.html');
+                                window.loadPage('main_menu.html');
                             });
                         });
 
@@ -620,7 +617,7 @@
                             if (href && !href.startsWith('#')) {
                                 link.addEventListener('click', function(e) {
                                     e.preventDefault();
-                                    loadPage(href);
+                                    window.loadPage(href);
                                 });
                             }
                         });
@@ -631,7 +628,7 @@
                     // Если что-то пошло не так, пытаемся просто перейти по ссылке
                     window.location.href = fullPath;
                 });
-        }
+        };
     </script>
 
 </body>
