@@ -172,12 +172,13 @@
 
         .top-utility-icons {
             display: flex;
-            gap: 6px;
+            gap: 8px; /* Увеличили расстояние между иконками */
             margin-top: 10px;
             position: relative;
+            align-items: center;
         }
         .utility-icon {
-            width: 28px; height: 28px; 
+            width: 32px; height: 32px; /* Сделали иконки чуть больше */
             background: rgba(50, 40, 30, 0.85); 
             border: 1px solid rgba(255,255,255,0.15); 
             border-radius: 3px;
@@ -190,23 +191,32 @@
             background: rgba(80, 60, 40, 0.9);
             transform: scale(1.1);
         }
-        .utility-icon img { width: 16px; height: 16px; object-fit: contain; }
+        .utility-icon img { width: 20px; height: 20px; object-fit: contain; }
 
         /* =========================================================
-           УВЕДОМЛЕНИЕ (Иконка + Оранжевая звезда с цифрой)
+           УВЕДОМЛЕНИЕ (Большая иконка + Цифра на месте)
            ========================================================= */
         .notification-wrapper {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
+            background: rgba(50, 40, 30, 0.85); 
+            border: 1px solid rgba(255,255,255,0.15); 
+            border-radius: 3px;
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.5);
+            transition: 0.2s;
+        }
+        .notification-wrapper:hover, .notification-wrapper:active {
+            background: rgba(80, 60, 40, 0.9);
+            transform: scale(1.1);
         }
         .notification-wrapper img {
-            width: 100%;
-            height: 100%;
+            width: 20px;
+            height: 20px;
             object-fit: contain;
         }
         .notification-badge {
@@ -215,47 +225,43 @@
             right: -10px;
             width: 18px;
             height: 18px;
-            background: transparent; /* Фон задаётся картинкой звезды, если нужна */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 900;
             color: #fff;
             text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
-            /* Имитируем звезду через CSS, если нет картинки. У тебя есть иконка, мы просто накладываем текст поверх */
+            /* Имитация звезды, если нужно */
             z-index: 2;
+            background: transparent;
         }
 
         /* =========================================================
-           МОДАЛЬНОЕ ОКНО ALERTS
+           МОДАЛЬНОЕ ОКНО ALERTS (Появляется рядом с кнопкой)
            ========================================================= */
-        .modal-overlay {
+        .modal-alerts-container {
             display: none;
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
             z-index: 9998;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(2px);
+            /* Окно будет появляться прямо под иконкой уведомлений */
+            top: 70px; 
+            right: 20px;
+            width: 380px;
         }
-        .modal-overlay.active {
-            display: flex;
+        .modal-alerts-container.active {
+            display: block;
         }
 
         .modal-alerts {
-            background: #ede9df; /* Бежевый фон TF2 */
+            background: #ede9df;
             border: 2px solid #5c5750;
-            border-radius: 6px;
-            padding: 15px 20px;
-            width: 400px;
-            max-width: 90%;
+            border-radius: 4px;
+            padding: 12px 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            position: relative;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         .modal-alerts-header {
             display: flex;
@@ -264,105 +270,94 @@
         }
         .modal-alerts-title {
             color: #2e2b27;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         .modal-alerts-close {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #7a756d;
             cursor: pointer;
             background: #5c5750;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: 0.2s;
         }
-        .modal-alerts-close:hover {
-            background: #918980;
-            color: #fff;
-        }
+        .modal-alerts-close:hover { background: #918980; color: #fff; }
 
         .modal-alerts-body {
             background: #d4cec4;
             border-radius: 4px;
-            padding: 10px 15px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #2e2b27;
-            font-size: 14px;
+            font-size: 13px;
         }
         .modal-alerts-actions {
             display: flex;
             gap: 6px;
         }
         .alert-action-btn {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: 0.2s;
         }
-        .alert-action-btn:hover {
-            filter: brightness(1.2);
-        }
-        .alert-action-btn img {
-            width: 16px;
-            height: 16px;
-            object-fit: contain;
-        }
+        .alert-action-btn:hover { filter: brightness(1.2); }
+        .alert-action-btn img { width: 14px; height: 14px; object-fit: contain; }
         .btn-eye { background: #5c5750; }
         .btn-close-alert { background: #b73f33; }
 
         /* =========================================================
-           МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ ПРЕДМЕТА (NEW ITEM ACQUIRED!)
+           МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ ПРЕДМЕТА (На весь экран)
            ========================================================= */
         .modal-item-overlay {
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(4px);
         }
-        .modal-item-overlay.active {
-            display: flex;
-        }
+        .modal-item-overlay.active { display: flex; }
 
         .modal-item-box {
             background: #2e2b27;
             border: 2px solid #c7b89e;
             border-radius: 8px;
-            padding: 20px 25px 15px 25px;
-            width: 550px;
-            max-width: 95%;
+            padding: 30px 40px 20px 40px;
+            width: 95%;
+            height: 90%;
+            max-width: 700px;
+            max-height: 550px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            position: relative;
             display: flex;
             flex-direction: column;
         }
 
         .modal-item-title {
             color: #e8e5df;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 800;
             letter-spacing: 1px;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .modal-item-subtitle {
-            color: #e89867; /* Оранжевый TF2 */
+            color: #e89867;
             font-size: 18px;
             font-weight: 800;
             text-align: center;
@@ -371,12 +366,14 @@
 
         .modal-item-content {
             display: flex;
+            flex: 1;
             gap: 20px;
             align-items: flex-start;
             border: 2px solid #c7b89e;
             border-radius: 6px;
-            padding: 15px;
+            padding: 20px;
             position: relative;
+            min-height: 0;
         }
 
         .modal-item-id {
@@ -389,14 +386,14 @@
         }
         .modal-item-image {
             flex: 1;
-            min-height: 150px;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .modal-item-image img {
             max-width: 100%;
-            max-height: 150px;
+            max-height: 100%;
             object-fit: contain;
         }
 
@@ -404,40 +401,19 @@
             flex: 1.2;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             gap: 4px;
-            padding-top: 20px;
         }
-        .modal-item-name {
-            color: #e8d374; /* Жёлтый */
-            font-size: 20px;
-            font-weight: 800;
-        }
-        .modal-item-level {
-            color: #b5b2ac;
-            font-size: 13px;
-        }
-        .modal-item-desc {
-            color: #b5b2ac;
-            font-size: 12px;
-            line-height: 1.4;
-            margin-top: 4px;
-        }
-        .modal-item-rarity {
-            color: #a36bf3; /* Фиолетовый для Unusual */
-            font-size: 13px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-        .modal-item-trade {
-            color: #e89867;
-            font-size: 11px;
-            margin-top: 8px;
-        }
+        .modal-item-name { color: #e8d374; font-size: 20px; font-weight: 800; }
+        .modal-item-level { color: #b5b2ac; font-size: 13px; }
+        .modal-item-desc { color: #b5b2ac; font-size: 12px; line-height: 1.4; margin-top: 4px; }
+        .modal-item-rarity { color: #a36bf3; font-size: 13px; font-weight: bold; margin-top: 4px; }
+        .modal-item-trade { color: #e89867; font-size: 11px; margin-top: 8px; }
 
         .modal-item-portrait {
             position: absolute;
-            top: -20px;
-            right: -20px;
+            top: -15px;
+            right: -15px;
             width: 50px;
             height: 50px;
             border-radius: 4px;
@@ -448,11 +424,7 @@
             align-items: center;
             justify-content: center;
         }
-        .modal-item-portrait img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .modal-item-portrait img { width: 100%; height: 100%; object-fit: cover; }
 
         .modal-item-buttons {
             display: flex;
@@ -461,19 +433,19 @@
             gap: 10px;
         }
         .modal-item-btn {
-            padding: 8px 20px;
+            padding: 8px 10px;
             border: none;
-            border-radius: 4px;
+            border-radius: 3px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             transition: 0.2s;
-            color: #1c1a17;
+            flex: 1;
         }
         .modal-item-btn:hover { filter: brightness(1.1); }
-        .btn-prev { background: #918980; }
+        .btn-prev { background: #918980; color: #1c1a17; }
         .btn-next { background: #d04531; color: #fff; }
-        .btn-resume { background: #c7b89e; flex: 0.5; }
+        .btn-resume { background: #c7b89e; color: #1c1a17; flex: 1.5; }
 
         .main-content {
             position: relative;
@@ -545,19 +517,13 @@
             justify-content: space-between;
             align-items: center;
         }
-        .player-name {
-            color: #e8e5df;
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
+        .player-name { color: #e8e5df; font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
 
         .settings-icon-inside {
             position: absolute;
             right: 8px;
             top: 8px;
-            width: 22px;
-            height: 22px;
+            width: 22px; height: 22px;
             object-fit: contain;
             cursor: pointer;
             border-radius: 6px;
@@ -565,9 +531,7 @@
             padding: 0;
             display: block;
         }
-        .settings-icon-inside:hover {
-            opacity: 0.7;
-        }
+        .settings-icon-inside:hover { opacity: 0.7; }
 
         .player-level-text {
             color: #b5b2ac;
@@ -605,24 +569,8 @@
             );
         }
 
-        .panel-title {
-            font-size: 12px;
-            color: #e8e5df;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-            border-bottom: 1px solid #47443e;
-            padding-bottom: 3px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .panel-body {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            font-size: 11px;
-            color: #b5b2ac;
-        }
+        .panel-title { font-size: 12px; color: #e8e5df; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; border-bottom: 1px solid #47443e; padding-bottom: 3px; display: flex; justify-content: space-between; }
+        .panel-body { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: #b5b2ac; }
         .panel-row { display: flex; justify-content: space-between; }
         .panel-row span:last-child { color: #9d9a94; text-align: right; }
 
@@ -658,10 +606,7 @@
             border: none;
             outline: none !important;
         }
-        .game-btn:active {
-            transform: scale(0.95);
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.5), 0 1px 0 #1a1816;
-        }
+        .game-btn:active { transform: scale(0.95); box-shadow: inset 0 0 5px rgba(0,0,0,0.5), 0 1px 0 #1a1816; }
         .game-btn img { width: 18px; height: 18px; object-fit: contain; }
 
         .game-btn.dark {
@@ -715,7 +660,7 @@
                     <div class="utility-icon"><img src="images/icon/icon_games.png" alt="Games"></div>
                     <div class="utility-icon"><img src="images/icon/win_is_games.png" alt="Win"></div>
                     
-                    <!-- УВЕДОМЛЕНИЕ (Новая иконка) -->
+                    <!-- УВЕДОМЛЕНИЕ (Иконка с цифрой 1) -->
                     <div class="notification-wrapper" onclick="openAlerts()">
                         <img src="images/icon/notification.png" alt="Notifications">
                         <div class="notification-badge">1</div>
@@ -787,17 +732,15 @@
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- МОДАЛЬНОЕ ОКНО ALERTS -->
-    <!-- ========================================================= -->
-    <div class="modal-overlay" id="alertsModal">
+    <!-- МОДАЛЬНОЕ ОКНО ALERTS (Всплывает рядом с иконкой) -->
+    <div class="modal-alerts-container" id="alertsModal">
         <div class="modal-alerts">
             <div class="modal-alerts-header">
                 <div class="modal-alerts-title">ALERTS (1)</div>
                 <div class="modal-alerts-close" onclick="closeAlerts()">×</div>
             </div>
             <div class="modal-alerts-body">
-                <span>You have new items!</span>
+                <span>YOU HAVE NEW ITEMS!</span>
                 <div class="modal-alerts-actions">
                     <button class="alert-action-btn btn-eye" onclick="openItemFound()">
                         <img src="images/icon/icon_games.png" alt="View">
@@ -810,9 +753,7 @@
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ ПРЕДМЕТА (NEW ITEM ACQUIRED!) -->
-    <!-- ========================================================= -->
+    <!-- МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ ПРЕДМЕТА (На весь экран) -->
     <div class="modal-item-overlay" id="itemFoundModal">
         <div class="modal-item-box">
             <div class="modal-item-title">NEW ITEM ACQUIRED!</div>
@@ -822,7 +763,6 @@
                 <div class="modal-item-id">ITEM<br>#14</div>
                 
                 <div class="modal-item-image">
-                    <!-- Заменили на стандартную иконку, вставь свою 3D модель если есть -->
                     <img src="images/icon/Backpack_case.png" alt="Item">
                 </div>
                 
@@ -835,7 +775,6 @@
                 </div>
 
                 <div class="modal-item-portrait">
-                    <!-- Портрет класса -->
                     <img src="images/class/red/Scout.png" alt="Class">
                 </div>
             </div>
@@ -848,10 +787,7 @@
         </div>
     </div>
 
-
-    <!-- ========================================================= -->
     <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК -->
-    <!-- ========================================================= -->
     <div id="settingsModal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 28, 25, 0.7); z-index: 9997; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
         <div style="background: rgba(46, 43, 39, 0.9); border: 2px solid #c7b89e; border-radius: 8px; padding: 20px 25px; width: 360px; max-width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 15px; position: relative;">
             
@@ -881,7 +817,7 @@
 
     <script>
         // =========================================================
-        // ОТКРЫТИЕ И ЗАКРЫТИЕ ALERTS
+        // ALERTS
         // =========================================================
         function openAlerts() {
             document.getElementById('alertsModal').classList.add('active');
@@ -889,10 +825,6 @@
         function closeAlerts() {
             document.getElementById('alertsModal').classList.remove('active');
         }
-
-        // =========================================================
-        // ОТКРЫТИЕ И ЗАКРЫТИЕ ОКНА ПРЕДМЕТА
-        // =========================================================
         function openItemFound() {
             closeAlerts();
             document.getElementById('itemFoundModal').classList.add('active');
@@ -902,7 +834,7 @@
         }
 
         // =========================================================
-        // ОТКРЫТИЕ И ЗАКРЫТИЕ НАСТРОЕК
+        // НАСТРОЙКИ
         // =========================================================
         function openSettings() {
             document.getElementById('settingsModal').style.display = 'flex';
@@ -916,9 +848,6 @@
             if (e.target === this) closeSettings();
         });
 
-        // =========================================================
-        // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ РЕЖИМОВ
-        // =========================================================
         let currentMode = localStorage.getItem('tf2_mode') || 'casual';
         function updateModeButtons() {
             const casualBtn = document.getElementById('modeCasual');
@@ -947,7 +876,7 @@
         }
 
         // =========================================================
-        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
+        // ИНИЦИАЛИЗАЦИЯ
         // =========================================================
         document.addEventListener("DOMContentLoaded", function() {
             
@@ -994,7 +923,14 @@
                 }, 2000);
             }
 
-            const tracks = ["sounds/main_menu/1.mp3", "sounds/main_menu/2.mp3", "sounds/main_menu/3.mp3"];
+            // ТЕПЕРЬ 5 ТРЕКОВ! (1, 2, 3, 4, 5)
+            const tracks = [
+                "sounds/main_menu/1.mp3",
+                "sounds/main_menu/2.mp3",
+                "sounds/main_menu/3.mp3",
+                "sounds/main_menu/4.mp3",
+                "sounds/main_menu/5.mp3"
+            ];
             let currentTrackIndex = 0;
             const audioPlayer = document.getElementById('bgMusic');
             const musicBtn = document.getElementById('musicToggle');
