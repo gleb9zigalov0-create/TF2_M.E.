@@ -401,7 +401,6 @@
 </head>
 <body>
 
-    <!-- НЕВИДИМЫЙ ПЛЕЕР, КОТОРЫЙ НИКОГДА НЕ ПЕРЕЗАГРУЖАЕТСЯ -->
     <iframe src="player.html" style="width:0; height:0; border:none; position:absolute;"></iframe>
 
     <div class="loading-screen" id="loadingScreen">
@@ -497,22 +496,24 @@
     </div>
 
     <script>
+        // Используем старый добрый синтаксис для 100% совместимости с телефонами
         document.addEventListener("DOMContentLoaded", function() {
             
-            const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
-            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${backgrounds[Math.floor(Math.random() * backgrounds.length)]}')`;
+            var backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
+            var randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.getElementById('menuBackground').style.backgroundImage = 'url(images/background/' + randomBg + ')';
 
-            const classes = [
+            var classes = [
                 "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
                 "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
             ];
-            const randomClass = classes[Math.floor(Math.random() * classes.length)];
-            const charImg = document.getElementById('menuCharacter');
-            charImg.src = `images/class/red/${randomClass}`;
+            var randomClass = classes[Math.floor(Math.random() * classes.length)];
+            var charImg = document.getElementById('menuCharacter');
+            charImg.src = 'images/class/red/' + randomClass;
             charImg.style.height = "150%";
             charImg.style.bottom = "-55%";
 
-            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(randomClass)) {
+            if (randomClass === "Soldier.png" || randomClass === "Demoman.png" || randomClass === "Heavy.png" || randomClass === "Engineer.png") {
                 charImg.style.right = "-60px";
             } else if (randomClass === "Spy.png" || randomClass === "Sniper.png") {
                 charImg.style.right = "70px";
@@ -520,17 +521,16 @@
                 charImg.style.right = "30px";
             }
 
-            let playerLevel = 4; 
-            const medalImg = document.getElementById('levelMedal');
-            document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
-            medalImg.src = `images/levels/${playerLevel}.png`;
+            var playerLevel = 4; 
+            var medalImg = document.getElementById('levelMedal');
+            document.getElementById('playerLevelText').innerText = 'УРОВЕНЬ: ' + playerLevel;
+            medalImg.src = 'images/levels/' + playerLevel + '.png';
             medalImg.onerror = function() { this.style.display = 'none'; };
 
             // Управление плеером в iframe
-            const musicBtn = document.getElementById('musicToggle');
+            var musicBtn = document.getElementById('musicToggle');
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Отправляем команду в iframe
                 document.querySelector('iframe').contentWindow.postMessage('next_track', '*');
             });
         });
