@@ -499,16 +499,14 @@
         document.addEventListener("DOMContentLoaded", function() {
             
             // =========================================================
-            // СИСТЕМА ФЛАГА ЗАГРУЗКИ (Лоадинг только при первом входе)
+            // СИСТЕМА ФЛАГА ЗАГРУЗКИ
             // =========================================================
             const hasLoaded = sessionStorage.getItem('tf2_loaded');
 
             if (hasLoaded === 'true') {
-                // Если уже загружались раньше — убираем лоадинг и показываем меню МГНОВЕННО
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('mainUI').classList.add('loaded');
             } else {
-                // Если заходим в первый раз — ставим флаг и запускаем лоадинг на 2 секунды
                 sessionStorage.setItem('tf2_loaded', 'true');
                 setTimeout(() => {
                     document.getElementById('loadingScreen').classList.add('hidden');
@@ -517,24 +515,41 @@
             }
             
             // =========================================================
-            // ФОН И ПЕРСОНАЖ
+            // ФОН (Запоминаем в localStorage)
             // =========================================================
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
-            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${backgrounds[Math.floor(Math.random() * backgrounds.length)]}')`;
+            let savedBg = localStorage.getItem('tf2_saved_bg');
+            
+            // Если сохранённого фона нет, выбираем случайный и сохраняем
+            if (!savedBg) {
+                savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                localStorage.setItem('tf2_saved_bg', savedBg);
+            }
+            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${savedBg}')`;
 
+            // =========================================================
+            // ПЕРСОНАЖ (Запоминаем в localStorage)
+            // =========================================================
             const classes = [
                 "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
                 "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
             ];
-            const randomClass = classes[Math.floor(Math.random() * classes.length)];
+            let savedClass = localStorage.getItem('tf2_saved_class');
+            
+            // Если сохранённого класса нет, выбираем случайный и сохраняем
+            if (!savedClass) {
+                savedClass = classes[Math.floor(Math.random() * classes.length)];
+                localStorage.setItem('tf2_saved_class', savedClass);
+            }
+
             const charImg = document.getElementById('menuCharacter');
-            charImg.src = `images/class/red/${randomClass}`;
+            charImg.src = `images/class/red/${savedClass}`;
             charImg.style.height = "150%";
             charImg.style.bottom = "-55%";
 
-            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(randomClass)) {
+            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(savedClass)) {
                 charImg.style.right = "-60px";
-            } else if (randomClass === "Spy.png" || randomClass === "Sniper.png") {
+            } else if (savedClass === "Spy.png" || savedClass === "Sniper.png") {
                 charImg.style.right = "70px";
             } else {
                 charImg.style.right = "30px";
@@ -550,7 +565,7 @@
             medalImg.onerror = function() { this.style.display = 'none'; };
 
             // =========================================================
-            // МУЗЫКА (Продолжается с того же места)
+            // МУЗЫКА
             // =========================================================
             const tracks = [
                 "sounds/main_menu/1.mp3",
@@ -583,7 +598,6 @@
                 }, 500);
             });
 
-            // Каждую секунду сохраняем время
             setInterval(() => {
                 if (!audioPlayer.paused) {
                     localStorage.setItem('tf2_current_time', audioPlayer.currentTime);
