@@ -194,18 +194,19 @@
         .utility-icon img { width: 20px; height: 20px; object-fit: contain; }
 
         /* =========================================================
-           УВЕДОМЛЕНИЕ (Кнопка больше, цифра справа)
+           УВЕДОМЛЕНИЕ (БОЛЬШАЯ кнопка, БЕЗ ОБВОДКИ)
            ========================================================= */
         .notification-wrapper {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 34px; /* Кнопка стала больше */
-            height: 34px;
+            width: 36px; /* Сделал БОЛЬШЕ! */
+            height: 36px;
             cursor: pointer;
             background: rgba(50, 40, 30, 0.85); 
-            border: 1px solid rgba(255,255,255,0.15); 
+            /* УБРАЛ ОБВОДКУ У КНОПКИ */
+            border: none;
             border-radius: 3px;
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.5);
             transition: 0.2s;
@@ -215,14 +216,14 @@
             transform: scale(1.1);
         }
         .notification-wrapper img {
-            width: 20px;
-            height: 20px;
+            width: 22px; /* Иконка внутри тоже стала больше */
+            height: 22px;
             object-fit: contain;
         }
         .notification-badge {
             position: absolute;
-            top: -7px;
-            right: -8px; /* Цифра на своём месте */
+            top: -6px;
+            right: -6px;
             width: 18px;
             height: 18px;
             display: flex;
@@ -236,15 +237,15 @@
         }
 
         /* =========================================================
-           МОДАЛЬНОЕ ОКНО ALERTS (Уменьшено, под кнопкой, без обводок)
+           МОДАЛЬНОЕ ОКНО ALERTS (БОЛЬШЕ, ПОД КНОПКОЙ, С ОБВОДКОЙ)
            ========================================================= */
         .modal-alerts-container {
             display: none;
             position: absolute;
             z-index: 9998;
-            top: 75px; 
-            right: 0px; /* Выровнено по правому краю */
-            width: 320px; /* Сделал компактнее */
+            top: 78px; /* Опустил чуть ниже */
+            right: 0px;
+            width: 360px; /* Вернул нормальный размер! */
         }
         .modal-alerts-container.active {
             display: block;
@@ -252,9 +253,9 @@
 
         .modal-alerts {
             background: #ede9df;
-            border: none; /* Убрал обводку */
-            border-radius: 3px;
-            padding: 10px 12px;
+            border: 2px solid #5c5750; /* Обводка вокруг всего окна */
+            border-radius: 4px;
+            padding: 12px 14px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
@@ -272,45 +273,54 @@
             letter-spacing: 0.5px;
         }
         .modal-alerts-close {
-            background: transparent;
+            background: #5c5750; /* Серый фон, как у нормальной кнопки TF2 */
             border: none;
+            border-radius: 4px; /* ЗАКРУГЛЕННАЯ кнопка */
             cursor: pointer;
-            padding: 4px;
+            padding: 4px 6px;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .modal-alerts-close:hover { filter: brightness(0.8); }
+        .modal-alerts-close:hover { filter: brightness(1.2); }
         .modal-alerts-close img {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             object-fit: contain;
-            filter: invert(1); /* Делаем красный крестик белым */
+            /* УБРАЛ ИНВЕРТ! Крестик теперь настоящий красный */
         }
 
         .modal-alerts-body {
             background: #d4cec4;
-            border-radius: 2px;
-            padding: 6px 10px;
+            border: 1px solid #b7b0a5; /* Внутренняя тонкая обводка */
+            border-radius: 3px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #2e2b27;
-            font-size: 13px;
+            font-size: 14px;
         }
         .modal-alerts-actions {
             display: flex;
-            gap: 4px;
+            gap: 6px;
         }
         .alert-action-btn {
-            background: transparent;
+            background: #5c5750; /* Серый фон */
             border: none;
+            border-radius: 4px; /* ЗАКРУГЛЕННАЯ кнопка */
             cursor: pointer;
-            padding: 4px;
+            padding: 4px 6px;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .alert-action-btn:hover { filter: brightness(0.8); }
+        .alert-action-btn:hover { filter: brightness(1.2); }
         .alert-action-btn img {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             object-fit: contain;
         }
 
@@ -654,7 +664,7 @@
                     <div class="utility-icon"><img src="images/icon/icon_games.png" alt="Games"></div>
                     <div class="utility-icon"><img src="images/icon/win_is_games.png" alt="Win"></div>
                     
-                    <!-- УВЕДОМЛЕНИЕ (Большая кнопка с цифрой 1 справа) -->
+                    <!-- УВЕДОМЛЕНИЕ (БОЛЬШОЕ, БЕЗ ОБВОДКИ ВОКРУГ КНОПКИ) -->
                     <div class="notification-wrapper" onclick="openAlerts()">
                         <img src="images/icon/notification.png" alt="Notifications">
                         <div class="notification-badge">1</div>
@@ -726,12 +736,12 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ALERTS (Уменьшено, под кнопкой) -->
+    <!-- МОДАЛЬНОЕ ОКНО ALERTS (БОЛЬШОЕ, ПОД КНОПКОЙ) -->
     <div class="modal-alerts-container" id="alertsModal">
         <div class="modal-alerts">
             <div class="modal-alerts-header">
                 <div class="modal-alerts-title">ALERTS (1)</div>
-                <!-- Крестик с твоей картинкой close.png -->
+                <!-- Кнопка закрытия (ЗАКРУГЛЕННАЯ, БЕЗ ИНВЕРТА) -->
                 <button class="modal-alerts-close" onclick="closeAlerts()">
                     <img src="images/icon/close.png" alt="Close">
                 </button>
@@ -739,7 +749,7 @@
             <div class="modal-alerts-body">
                 <span>YOU HAVE NEW ITEMS!</span>
                 <div class="modal-alerts-actions">
-                    <!-- Кнопка с твоим eye.png -->
+                    <!-- Кнопка глаза (ЗАКРУГЛЕННАЯ) -->
                     <button class="alert-action-btn" onclick="openItemFound()">
                         <img src="images/icon/eye.png" alt="View">
                     </button>
@@ -812,7 +822,7 @@
 
     <script>
         // =========================================================
-        // ALERTSs
+        // ALERTS
         // =========================================================
         function openAlerts() {
             document.getElementById('alertsModal').classList.add('active');
@@ -871,7 +881,7 @@
         }
 
         // =========================================================
-        // ИНИЦИАЛИЗАЦИЯ
+        // ИНИЦИАЛИЗАЦИЯ (РАНДОМ + ВОССТАНОВЛЕНИЕ)
         // =========================================================
         document.addEventListener("DOMContentLoaded", function() {
             
@@ -886,17 +896,25 @@
             medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
+            // ВОЗВРАЩАЕМ РАНДОМНЫЙ ФОН
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
             let savedBg = localStorage.getItem('tf2_saved_bg');
-            if (!savedBg) { savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)]; localStorage.setItem('tf2_saved_bg', savedBg); }
+            if (!savedBg) {
+                savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                localStorage.setItem('tf2_saved_bg', savedBg);
+            }
             document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${savedBg}')`;
 
+            // ВОЗВРАЩАЕМ РАНДОМНОГО ПЕРСОНАЖА
             const classes = [
                 "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
                 "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
             ];
             let savedClass = localStorage.getItem('tf2_saved_class');
-            if (!savedClass) { savedClass = classes[Math.floor(Math.random() * classes.length)]; localStorage.setItem('tf2_saved_class', savedClass); }
+            if (!savedClass) {
+                savedClass = classes[Math.floor(Math.random() * classes.length)];
+                localStorage.setItem('tf2_saved_class', savedClass);
+            }
             const charImg = document.getElementById('menuCharacter');
             charImg.src = `images/class/red/${savedClass}`;
             charImg.style.height = "150%"; charImg.style.bottom = "-55%";
@@ -918,7 +936,7 @@
                 }, 2000);
             }
 
-            // ТЕПЕРЬ 5 ТРЕКОВ! (1, 2, 3, 4, 5)
+            // МУЗЫКА (5 ТРЕКОВ)
             const tracks = [
                 "sounds/main_menu/1.mp3",
                 "sounds/main_menu/2.mp3",
