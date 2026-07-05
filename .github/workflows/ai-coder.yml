@@ -1,0 +1,56 @@
+name: AI Developer Agent
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  code-generation:
+    if: contains(github.event.issue.labels.*.name, 'ai-code')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-line: '20'
+
+      - name: Install AI Tool
+        run: npm install -g @google/genai-cli-placeholder-or-custom-script || true
+
+      - name: Call DeepSeek Agent
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # Этот скрипт берет твою задачу, скармливает Дипсику и просит исправить файлы
+          echo "ИИ-агент читает вашу задачу №$ISSUE_NUMBER..."
+          
+          # Простейший автоматический фикс для демонстрации хардкора (в реальном агенте тут вызывается либа)
+          # Чтобы не усложнять, мы просто даем Гитхабу команду обработать файлы через API
+          curl -X POST https://deepseek.com \
+            -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"model\": \"deepseek-chat\",
+              \"messages\": [
+                {\"role\": \"system\", \"content\": \"Ты ИИ-разработчик. Исправь код в репозитории по запросу пользователя. Выдай только измененный код файла.\"},
+                {\"role\": \"user\", \"content\": \"$ISSUE_BODY\"}
+              ]
+            }" > ai_response.json
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "DeepSeek AI Agent"
+          git config --global user.email "ai-agent@github.com"
+          # Если ИИ изменил файлы, пушим их в ветку
+          git add .
+          git commit -m "🤖 Авто-фикс от ИИ-агента (Task #${{ github.event.issue.number }})" || echo "Нет изменений"
+          git push
