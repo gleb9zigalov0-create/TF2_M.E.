@@ -32,7 +32,6 @@
             overflow: hidden; 
         }
 
-        /* Лоадинг появляется ТОЛЬКО при первом запуске */
         .loading-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -68,7 +67,6 @@
             pointer-events: none;
         }
 
-        /* Интерфейс появляется через 2 секунды ТОЛЬКО ПЕРВЫЙ РАЗ */
         .top-header, .main-content, .bottom-nav, .character-layer {
             opacity: 0;
             transform: translateY(30px);
@@ -403,15 +401,15 @@
 </head>
 <body>
 
-    <!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР (Один на всё приложение) -->
+    <!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР -->
     <audio id="bgMusic" loop></audio>
 
-    <!-- ЛОАДИНГ (Появляется 1 раз, больше никогда) -->
+    <!-- ЛОАДИНГ -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-text">Загрузка...</div>
     </div>
 
-    <!-- КОНТЕЙНЕР (Всё меняется внутри, но страница не перезагружается) -->
+    <!-- КОНТЕЙНЕР -->
     <div class="ui-container" id="mainUI">
         
         <div class="background-layer" id="menuBackground"></div>
@@ -478,7 +476,7 @@
 
         <div class="bottom-nav">
             <div class="nav-buttons-left">
-                <!-- Кнопки теперь вызывают функцию loadPage -->
+                <!-- ЗАМЕНЯЕМ ССЫЛКИ НА ВЫЗОВ ФУНКЦИИ JS -->
                 <a href="#" class="game-btn" onclick="loadPage('election_piece.html'); return false;">
                     <img src="images/icon/Backpack_case.png" alt="">
                     ПРЕДМЕТЫ
@@ -503,7 +501,7 @@
 
     <script>
         // =========================================================
-        // ЗАПУСК (Выполняется 1 раз, навсегда)
+        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
         // =========================================================
         document.addEventListener("DOMContentLoaded", function() {
             
@@ -569,16 +567,19 @@
         });
 
         // =========================================================
-        // СИСТЕМА ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ (БЕЗ ПЕРЕЗАГРУЗКИ И БЕЗ ЛОАДИНГА)
+        // СИСТЕМА ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ (БЕЗ ПЕРЕЗАГРУЗКИ И БЕЗ BASE)
         // =========================================================
         function loadPage(url) {
-            fetch(url)
+            // Полный путь к файлу на GitHub
+            const fullPath = `https://gleb9zigalov0.github.io/TF2_M.E/${url}`;
+            
+            fetch(fullPath)
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     
-                    // Извлекаем стили из загружаемой страницы
+                    // Извлекаем стили
                     const newStyles = doc.querySelectorAll('style');
                     const head = document.head;
                     const existingDynamicStyles = head.querySelectorAll('.dynamic-style');
@@ -613,7 +614,7 @@
                             });
                         });
 
-                        // Перехватываем выбор классов и другие ссылки
+                        // Перехватываем ссылки на другие страницы в новом контенте
                         mainUI.querySelectorAll('a[href$=".html"]').forEach(link => {
                             const href = link.getAttribute('href');
                             if (href && !href.startsWith('#')) {
@@ -624,6 +625,11 @@
                             }
                         });
                     }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки:', error);
+                    // Если что-то пошло не так, пытаемся просто перейти по ссылке
+                    window.location.href = fullPath;
                 });
         }
     </script>
