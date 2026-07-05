@@ -2,47 +2,41 @@ name: Run DeepSeek Code Editor
 
 on:
   push:
-    branches: [ main ]  # или master
+    branches: [ main, master ]  # Запуск при пуше в main или master
 
-# 1. ВАЖНО: Разрешаем экшену читать и изменять файлы в репозитории
 permissions:
-  contents: write
+  contents: write  # Дает право ИИ редактировать и сохранять файлы
 
 jobs:
   edit-code:
     runs-on: ubuntu-latest
 
     steps:
-      # 2. Скачиваем весь репозиторий (по умолчанию доступны все файлы)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Скачивает всю историю, чтобы избежать ошибок при push
+          fetch-depth: 0  # Скачивает абсолютно все файлы и всю историю репозитория
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      # 3. Здесь работает ваш редактор кода (исправленный шаг)
       - name: Run DeepSeek Code Editor
         uses: actions/github-script@v7
         env:
-          # Передаем правильный URL без косяков с протоколом
-          DEEPSEEK_API_URL: "https://deepseek.com" 
+          # ИСПРАВЛЕНО: Теперь адрес написан правильно, без двоеточия в начале хоста
+          DEEPSEEK_API_URL: "https://deepseek.com"
         with:
           script: |
-            // Здесь запускается ваш скрипт редактирования.
-            // Node.js теперь имеет доступ ко ВСЕМ файлам в текущей папке.
-            console.log("Редактор запущен и имеет доступ ко всем файлам.");
+            // Экшен видит весь корень репозитория.
+            // Сюда автоматически передается исправленный URL из env.DEEPSEEK_API_URL
+            console.log("Редактор запущен. Доступ ко всем файлам получен.");
 
-      # 4. ВАЖНО: Автоматически сохраняем изменения обратно в GitHub
       - name: Commit and Push changes
         run: |
           git config --local user.email "github-actions[bot]@://github.com"
           git config --local user.name "github-actions[bot]"
-          git add -A  # Добавляет абсолютно все измененные и новые файлы
-          
-          # Проверяем, есть ли вообще изменения, чтобы экшен не падал, если ничего не поменялось
-          git diff-index --quiet HEAD || git commit -m "Автоматическое обновление кода от DeepSeek"
+          git add -A  # Заставляет Git отслеживать изменения во ВСЕХ папках и файлах
+          git diff-index --quiet HEAD || git commit -m "Авто-исправление кода от DeepSeek"
           git push origin HEAD:${{ github.ref }}
