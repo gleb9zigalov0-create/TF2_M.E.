@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TF2 Backpack</title>
+    <style>
+        @font-face {
+            font-family: 'TF2';
+            src: url('tf2build.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'TF2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 10px; }
+        
+        .ui-container { 
+            width: 1024px; max-width: 100%; height: 90vh; max-height: 576px; 
+            background-color: #2e2b27; padding: 0; display: flex; flex-direction: column; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow: hidden; 
+        }
+
+        .top-panel { width: 100%; height: 68px; background: repeating-linear-gradient(45deg, #3a3733 0px, #3a3733 3px, #32302c 3px, #32302c 6px); border-bottom: 2px solid #24221f; display: flex; align-items: flex-end; padding: 0 30px; flex-shrink: 0; }
+        .tab { padding: 8px 35px 7px 35px; font-size: 22px; font-weight: 800; letter-spacing: 1px; border-radius: 8px 8px 0 0; border: 2px solid #3c3833; border-bottom: none; color: #7a756d; background: #2e2b27; position: relative; bottom: -2px; cursor: pointer; outline: none !important; text-decoration: none; display: inline-block; }
+        .tab.inactive { margin-left: 5px; background: #36332e; }
+        .tab.active { background: #2e2b27; color: #e8e5df; border-color: #3c3833; z-index: 2; height: 38px; }
+
+        .backpack-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 25px 0px 25px;
+            position: relative;
+        }
+        .bp-title { font-size: 22px; font-weight: 800; color: #e8e5df; display: flex; align-items: center; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+        .arrows { color: #d24531; margin-right: 10px; font-size: 18px; font-weight: bold; }
+        .dashed-line { flex-grow: 1; border-bottom: 2px dotted #524c44; margin: 0 15px; position: relative; top: 3px; }
+
+        .control-panel { display: flex; flex-direction: column; gap: 4px; padding: 5px 25px 12px 25px; }
+        .control-row { display: flex; justify-content: space-between; align-items: center; }
+
+        .checkbox-wrapper { display: flex; align-items: center; gap: 6px; color: #e8e5df; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .checkbox-wrapper input { width: 16px; height: 16px; accent-color: #d04531; cursor: pointer; background: #1a1816; border: 1px solid #5c5750; }
+
+        .search-wrapper { display: flex; align-items: center; gap: 5px; }
+        .search-wrapper span { color: #e8e5df; font-size: 13px; font-weight: bold; }
+        .search-input { background: #f6f3ea; border: none; padding: 2px 8px; border-radius: 2px; color: #1a1816; outline: none; width: 120px; font-weight: bold; height: 24px; }
+        .help-btn { color: #e8e5df; font-size: 14px; background: #3a3733; border: 1px solid #5c5750; border-radius: 4px; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; }
+
+        .dropdown { background: #2e2b27; border: 2px solid #5c5750; color: #c7c3bb; padding: 3px 8px; font-size: 12px; font-weight: bold; border-radius: 2px; cursor: pointer; background-image: linear-gradient(to bottom, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 50%, transparent 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; height: 24px; }
+        .dropdown::after { content: "▼"; font-size: 10px; color: #c7c3bb; margin-left: 5px; }
+        .dropdown.wide { width: 48%; }
+
+        .backpack-grid-container { flex: 1; padding: 0 25px 5px 25px; display: flex; flex-direction: column; }
+        .item-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin-bottom: 12px; }
+        .item-slot { aspect-ratio: 1 / 0.85; background-color: #1f1d1a; border: 1px solid #36332e; border-radius: 4px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; position: relative; display: flex; justify-content: center; align-items: center; }
+        .item-slot:hover, .item-slot:active { border-color: #5c5750; box-shadow: inset 0 0 15px rgba(255,255,255,0.02); z-index: 5; }
+
+        .pagination { display: flex; flex-wrap: wrap; gap: 3px; margin-top: auto; }
+        .page-btn { background: #3a3733; color: #b5b2ac; border: none; border-radius: 2px; width: 26px; height: 26px; display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.15s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+        .page-btn:hover, .page-btn:active { background: #4d4a44; }
+        .page-btn.active { background: #c54a35; color: #fff; }
+
+        .bottom-bar { border-top: 2px solid #47443e; background-color: #2e2b27; padding: 8px 30px 12px 30px; display: flex; justify-content: flex-start; flex-shrink: 0; width: 100%; min-height: 48px; }
+        .btn-back { background: #918980; color: #1c1a17; padding: 5px 20px; border-radius: 4px; font-size: 15px; font-weight: bold; display: flex; align-items: center; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #1a1816; cursor: pointer; outline: none !important; text-decoration: none; }
+        .btn-back span { margin-right: 8px; font-weight: normal; font-size: 17px; }
+    </style>
+</head>
+<body>
+    <div class="ui-container">
+        <div class="top-panel">
+            <a href="#" class="tab inactive" onclick="loadPage('main_menu.html'); return false;">LOADOUT</a>
+            <a href="#" class="tab inactive" onclick="loadPage('analytic.html'); return false;">STATS</a>
+        </div>
+
+        <div class="backpack-header">
+            <div class="bp-title"><span class="arrows">>></span> BACKPACK</div>
+            <div class="dashed-line"></div>
+        </div>
+
+        <div class="control-panel">
+            <div class="control-row">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="stockItems">
+                    <label for="stockItems">SHOW STOCK ITEMS</label>
+                </div>
+                <div class="search-wrapper">
+                    <span>SEARCH:</span>
+                    <input type="text" class="search-input">
+                    <div class="help-btn">?</div>
+                </div>
+            </div>
+            <div class="control-row">
+                <div class="dropdown wide">NO ITEM BORDERS</div>
+                <div class="dropdown wide">SORT BACKPACK</div>
+            </div>
+        </div>
+
+        <div class="backpack-grid-container">
+            <div class="item-grid">
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+                <div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div><div class="item-slot"></div>
+            </div>
+
+            <div class="pagination">
+                <div class="page-btn active" onclick="setActivePage(this)">1</div>
+                <div class="page-btn" onclick="setActivePage(this)">2</div>
+                <div class="page-btn" onclick="setActivePage(this)">3</div>
+                <div class="page-btn" onclick="setActivePage(this)">4</div>
+                <div class="page-btn" onclick="setActivePage(this)">5</div>
+                <div class="page-btn" onclick="setActivePage(this)">6</div>
+                <div class="page-btn" onclick="setActivePage(this)">7</div>
+                <div class="page-btn" onclick="setActivePage(this)">8</div>
+                <div class="page-btn" onclick="setActivePage(this)">9</div>
+                <div class="page-btn" onclick="setActivePage(this)">10</div>
+                <div class="page-btn" onclick="setActivePage(this)">11</div>
+                <div class="page-btn" onclick="setActivePage(this)">12</div>
+                <div class="page-btn" onclick="setActivePage(this)">13</div>
+                <div class="page-btn" onclick="setActivePage(this)">14</div>
+                <div class="page-btn" onclick="setActivePage(this)">15</div>
+                <div class="page-btn" onclick="setActivePage(this)">16</div>
+                <div class="page-btn" onclick="setActivePage(this)">17</div>
+                <div class="page-btn" onclick="setActivePage(this)">18</div>
+                <div class="page-btn" onclick="setActivePage(this)">19</div>
+                <div class="page-btn" onclick="setActivePage(this)">20</div>
+                <div class="page-btn" onclick="setActivePage(this)">21</div>
+                <div class="page-btn" onclick="setActivePage(this)">22</div>
+                <div class="page-btn" onclick="setActivePage(this)">23</div>
+                <div class="page-btn" onclick="setActivePage(this)">24</div>
+                <div class="page-btn" onclick="setActivePage(this)">25</div>
+                <div class="page-btn" onclick="setActivePage(this)">26</div>
+                <div class="page-btn" onclick="setActivePage(this)">27</div>
+                <div class="page-btn" onclick="setActivePage(this)">28</div>
+                <div class="page-btn" onclick="setActivePage(this)">29</div>
+                <div class="page-btn" onclick="setActivePage(this)">30</div>
+                <div class="page-btn" onclick="setActivePage(this)">31</div>
+                <div class="page-btn" onclick="setActivePage(this)">32</div>
+                <div class="page-btn" onclick="setActivePage(this)">33</div>
+                <div class="page-btn" onclick="setActivePage(this)">34</div>
+                <div class="page-btn" onclick="setActivePage(this)">35</div>
+                <div class="page-btn" onclick="setActivePage(this)">36</div>
+                <div class="page-btn" onclick="setActivePage(this)">37</div>
+                <div class="page-btn" onclick="setActivePage(this)">38</div>
+                <div class="page-btn" onclick="setActivePage(this)">39</div>
+                <div class="page-btn" onclick="setActivePage(this)">40</div>
+                <div class="page-btn" onclick="setActivePage(this)">41</div>
+                <div class="page-btn" onclick="setActivePage(this)">42</div>
+                <div class="page-btn" onclick="setActivePage(this)">43</div>
+                <div class="page-btn" onclick="setActivePage(this)">44</div>
+                <div class="page-btn" onclick="setActivePage(this)">45</div>
+                <div class="page-btn" onclick="setActivePage(this)">46</div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <a href="#" class="btn-back" onclick="loadPage('main_menu.html'); return false;"><span>&lt;&lt;</span> BACK</a>
+        </div>
+    </div>
+
+    <script>
+        function setActivePage(element) {
+            const buttons = element.parentElement.children;
+            for (let btn of buttons) btn.classList.remove('active');
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>

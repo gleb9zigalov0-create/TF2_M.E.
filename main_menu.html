@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TF2 Main Menu</title>
+    <style>
+        @font-face {
+            font-family: 'TF2';
+            src: url('tf2build.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background-color: #000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            font-family: 'TF2', 'Segoe UI', Tahoma, sans-serif; 
+            padding: 10px; 
+        }
+        
+        .ui-container { 
+            width: 1024px; max-width: 100%; height: 90vh; max-height: 576px; 
+            background-color: #2e2b27; padding: 0; 
+            display: flex; flex-direction: column; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.9); 
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        /* Лоадинг появляется ТОЛЬКО при первом запуске */
+        .loading-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 999;
+            background-color: transparent;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 20px;
+        }
+        .loading-screen::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.85) 100%);
+            pointer-events: none;
+        }
+        .loading-text {
+            position: relative;
+            z-index: 1000;
+            color: #e8e5df;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            opacity: 0.8;
+        }
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Интерфейс появляется через 2 секунды ТОЛЬКО ПЕРВЫЙ РАЗ */
+        .top-header, .main-content, .bottom-nav, .character-layer {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .ui-container.loaded .top-header,
+        .ui-container.loaded .main-content,
+        .ui-container.loaded .bottom-nav {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .ui-container.loaded .character-layer {
+            opacity: 0.95;
+            transform: translateY(0);
+        }
+
+        .background-layer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: brightness(0.6) saturate(0.7);
+            z-index: 1;
+        }
+
+        .character-layer {
+            position: absolute;
+            bottom: -55%;
+            width: auto;
+            z-index: 1;
+            opacity: 0;
+            filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.8));
+            pointer-events: none;
+            object-fit: contain;
+            transform-origin: bottom right;
+        }
+
+        .top-header {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 15px 0 15px;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .logo-img {
+            width: 100%; 
+            max-width: 350px;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+        }
+
+        .find-game-container {
+            display: flex;
+            align-items: stretch;
+            margin-top: 5px;
+        }
+
+        .btn-find-game {
+            background: #3d8b38;
+            padding: 6px 15px 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.15s;
+            box-shadow: inset 0 -2px 0 #2a6826, inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-find-game:hover, .btn-find-game:active { filter: brightness(1.1); }
+        .btn-find-game img { width: 18px; height: 18px; object-fit: contain; }
+        .btn-find-game span {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+        }
+
+        .btn-power {
+            background: #522c23;
+            padding: 6px 12px;
+            display: flex; align-items: center; justify-content: center;
+            border-top-right-radius: 4px; border-bottom-right-radius: 4px;
+            cursor: pointer;
+            box-shadow: inset 0 -2px 0 #3a1f18, inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: 0.15s;
+        }
+        .btn-power:hover, .btn-power:active { filter: brightness(1.1); }
+        .btn-power img { width: 18px; height: 18px; object-fit: contain; }
+
+        .top-utility-icons {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .utility-icon {
+            width: 28px; height: 28px; 
+            background: rgba(50, 40, 30, 0.85); 
+            border: 1px solid rgba(255,255,255,0.15); 
+            border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.5);
+        }
+        .utility-icon:hover, .utility-icon:active {
+            background: rgba(80, 60, 40, 0.9);
+            transform: scale(1.1);
+        }
+        .utility-icon img { width: 16px; height: 16px; object-fit: contain; }
+
+        .main-content {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 10px 20px;
+        }
+
+        .left-column-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 340px;
+            max-width: 90%;
+        }
+
+        .inner-panel {
+            background: rgba(24, 22, 20, 0.95);
+            border: 1px solid #5c5750;
+            border-radius: 4px;
+            padding: 8px 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .player-panel-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding-left: 40px;
+        }
+
+        .medal-wrapper {
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%) scale(1.8);
+            width: 52px; 
+            height: 52px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            border: none;
+            z-index: 5;
+        }
+        .medal-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
+        }
+
+        .player-info-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .player-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .player-name {
+            color: #e8e5df;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .settings-icon-inside {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            cursor: pointer;
+            border-radius: 6px;
+            background: transparent;
+            padding: 0;
+            display: block;
+        }
+        .settings-icon-inside:hover {
+            opacity: 0.7;
+        }
+
+        .player-level-text {
+            color: #b5b2ac;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 32px; 
+            display: block;
+        }
+
+        .player-progress-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #b5b2ac;
+            margin-bottom: 2px;
+        }
+
+        .progress-bar-bg {
+            background: #1f1d1a;
+            height: 6px;
+            border-radius: 1px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 0;
+            width: 45%;
+            background: repeating-linear-gradient(
+                90deg,
+                #3d8b38 0px,
+                #3d8b38 4px,
+                #1f1d1a 4px,
+                #1f1d1a 6px
+            );
+        }
+
+        .panel-title {
+            font-size: 12px;
+            color: #e8e5df;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #47443e;
+            padding-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .panel-body {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 11px;
+            color: #b5b2ac;
+        }
+        .panel-row { display: flex; justify-content: space-between; }
+        .panel-row span:last-child { color: #9d9a94; text-align: right; }
+
+        .bottom-nav {
+            position: relative;
+            z-index: 2;
+            margin-top: auto;
+            border-top: 2px solid rgba(255,255,255,0.05);
+            background: rgba(20, 18, 16, 0.95);
+            padding: 6px 15px 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .nav-buttons-left { display: flex; gap: 8px; flex-wrap: wrap; }
+        .game-btn {
+            background: linear-gradient(to bottom, #918980 0%, #7a7369 100%);
+            color: #1c1a17;
+            padding: 5px 12px 5px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #1a1816;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.1s;
+            border: none;
+            outline: none !important;
+        }
+        .game-btn:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5), 0 1px 0 #1a1816;
+        }
+        .game-btn img { width: 18px; height: 18px; object-fit: contain; }
+
+        .game-btn.dark {
+            background: linear-gradient(to bottom, #5c5750 0%, #413d38 100%);
+            color: #b5b2ac;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.1), 0 2px 0 #1a1816;
+        }
+
+        .nav-icons-right { display: flex; gap: 4px; }
+        .nav-icon {
+            width: 24px; height: 24px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #5c5750;
+            border-radius: 3px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+        }
+        .nav-icon:hover, .nav-icon:active { background: #5c5750; }
+        .nav-icon img { width: 14px; height: 14px; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+    <!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР (Один на всё приложение) -->
+    <audio id="bgMusic" loop></audio>
+
+    <!-- ЛОАДИНГ (Появляется 1 раз, больше никогда) -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">Загрузка...</div>
+    </div>
+
+    <!-- КОНТЕЙНЕР (Всё меняется внутри, но страница не перезагружается) -->
+    <div class="ui-container" id="mainUI">
+        
+        <div class="background-layer" id="menuBackground"></div>
+        <img src="" class="character-layer" id="menuCharacter" alt="Mercenary">
+
+        <div class="top-header">
+            <div class="logo-container">
+                <img src="images/icon/LOGO_heading.png" alt="Team Fortress 2" class="logo-img">
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div class="find-game-container">
+                    <div class="btn-find-game" id="musicToggle">
+                        <img src="images/icon/return_to_the_game.png" alt="Play">
+                        <span>НАЙТИ ИГРУ</span>
+                    </div>
+                    <div class="btn-power">
+                        <img src="images/icon/turn_off.png" alt="Exit">
+                    </div>
+                </div>
+                <div class="top-utility-icons">
+                    <div class="utility-icon"><img src="images/icon/icon_games.png" alt="Games"></div>
+                    <div class="utility-icon"><img src="images/icon/win_is_games.png" alt="Win"></div>
+                    <div class="utility-icon"><img src="images/icon/buy.png" alt="Buy"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-column-container">
+                <div class="inner-panel">
+                    <div class="player-panel-wrap">
+                        <div class="medal-wrapper"><img id="levelMedal" src="" alt="Rank"></div>
+                        <div class="player-info-box">
+                            <div class="player-name-row">
+                                <span class="player-name">USERLIVERFULL</span>
+                                <span class="player-level-text" id="playerLevelText">УРОВЕНЬ: 0</span>
+                            </div>
+                            <div class="player-progress-row">
+                                <span>ПРОГРЕСС НА РАЗРЯД</span>
+                                <span>0 / 0</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: 45%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <img src="images/icon/setting.jpg" class="settings-icon-inside" alt="Settings">
+                </div>
+                <div class="inner-panel">
+                    <div class="panel-title"><span>ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ</span></div>
+                    <div class="panel-body">
+                        <div class="panel-row" style="color: #e8d374; font-weight: bold;">Летний кейс с обновлением 2026</div>
+                        <div class="panel-row" style="font-size: 10px; color: #9d9a94;">Новые скины и предметы уже ждут тебя!</div>
+                    </div>
+                </div>
+                <div class="inner-panel">
+                    <div class="panel-title"><span>ДРУЗЬЯ</span><span style="font-size: 10px; font-weight: normal; color: #b5b2ac;">В сети: 0</span></div>
+                    <div class="panel-body" style="font-size: 11px; flex-direction: row; justify-content: space-between;">
+                        <span>Пригласи друзей в игру!</span><span style="color: #e8d374; cursor: pointer;">→</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-buttons-left">
+                <!-- Кнопки теперь вызывают функцию loadPage -->
+                <a href="#" class="game-btn" onclick="loadPage('election_piece.html'); return false;">
+                    <img src="images/icon/Backpack_case.png" alt="">
+                    ПРЕДМЕТЫ
+                </a>
+                <a href="#" class="game-btn">
+                    <img src="images/icon/buy.png" alt="">
+                    МАГАЗИН
+                </a>
+                <a href="#" class="game-btn">
+                    <img src="images/icon/achievements.png" alt="">
+                    ДОСТИЖЕНИЯ
+                </a>
+            </div>
+            <div class="nav-icons-right">
+                <div class="nav-icon"><img src="images/icon/Backpack_case.png" alt="BP"></div>
+                <div class="nav-icon"><img src="images/icon/Crafting_anvil.png" alt="Craft"></div>
+                <div class="nav-icon"><img src="images/icon/Summer2025_case.png" alt="Case"></div>
+                <div class="nav-icon"><img src="images/icon/Paint_icon.png" alt="Paint"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // ЗАПУСК (Выполняется 1 раз, навсегда)
+        // =========================================================
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // Фон
+            const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
+            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${backgrounds[Math.floor(Math.random() * backgrounds.length)]}')`;
+
+            // Персонаж
+            const classes = [
+                "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
+                "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
+            ];
+            const randomClass = classes[Math.floor(Math.random() * classes.length)];
+            const charImg = document.getElementById('menuCharacter');
+            charImg.src = `images/class/red/${randomClass}`;
+            charImg.style.height = "150%";
+            charImg.style.bottom = "-55%";
+
+            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(randomClass)) {
+                charImg.style.right = "-60px";
+            } else if (randomClass === "Spy.png" || randomClass === "Sniper.png") {
+                charImg.style.right = "70px";
+            } else {
+                charImg.style.right = "30px";
+            }
+
+            // Уровень
+            let playerLevel = 4; 
+            const medalImg = document.getElementById('levelMedal');
+            document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
+            medalImg.src = `images/levels/${playerLevel}.png`;
+            medalImg.onerror = function() { this.style.display = 'none'; };
+
+            // Музыка
+            const tracks = [
+                "sounds/main_menu/1.mp3",
+                "sounds/main_menu/2.mp3",
+                "sounds/main_menu/3.mp3"
+            ];
+            let currentTrackIndex = 0;
+            const audioPlayer = document.getElementById('bgMusic');
+            const musicBtn = document.getElementById('musicToggle');
+
+            // Случайный трек при старте
+            currentTrackIndex = Math.floor(Math.random() * tracks.length);
+
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('mainUI').classList.add('loaded');
+                
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                audioPlayer.play().catch(() => {});
+            }, 2000);
+
+            musicBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                audioPlayer.play().catch(() => {});
+            });
+        });
+
+        // =========================================================
+        // СИСТЕМА ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ (БЕЗ ПЕРЕЗАГРУЗКИ И БЕЗ ЛОАДИНГА)
+        // =========================================================
+        function loadPage(url) {
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Извлекаем стили из загружаемой страницы
+                    const newStyles = doc.querySelectorAll('style');
+                    const head = document.head;
+                    const existingDynamicStyles = head.querySelectorAll('.dynamic-style');
+                    existingDynamicStyles.forEach(el => el.remove());
+
+                    newStyles.forEach(style => {
+                        const newStyle = document.createElement('style');
+                        newStyle.className = 'dynamic-style';
+                        newStyle.textContent = style.textContent;
+                        head.appendChild(newStyle);
+                    });
+
+                    // Извлекаем контент
+                    const newContent = doc.querySelector('.ui-container');
+                    if (newContent) {
+                        const mainUI = document.getElementById('mainUI');
+                        // Заменяем контент, но СОХРАНЯЕМ фон и персонажа
+                        const oldBg = mainUI.querySelector('.background-layer');
+                        const oldChar = mainUI.querySelector('.character-layer');
+                        
+                        mainUI.innerHTML = newContent.innerHTML;
+                        
+                        // Восстанавливаем фон и персонажа
+                        mainUI.prepend(oldChar);
+                        mainUI.prepend(oldBg);
+                        
+                        // Перехватываем кнопки BACK и перекидываем их на главную
+                        mainUI.querySelectorAll('.btn-back').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                loadPage('main_menu.html');
+                            });
+                        });
+
+                        // Перехватываем выбор классов и другие ссылки
+                        mainUI.querySelectorAll('a[href$=".html"]').forEach(link => {
+                            const href = link.getAttribute('href');
+                            if (href && !href.startsWith('#')) {
+                                link.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    loadPage(href);
+                                });
+                            }
+                        });
+                    }
+                });
+        }
+    </script>
+
+</body>
+</html>

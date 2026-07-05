@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TF2 Class Selection</title>
+    <style>
+        @font-face {
+            font-family: 'TF2';
+            src: url('tf2build.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'TF2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 10px; }
+        
+        .ui-container { 
+            width: 1024px; max-width: 100%; height: 90vh; max-height: 576px; 
+            background-color: #2e2b27; padding: 0; display: flex; flex-direction: column; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow: hidden; 
+        }
+
+        .top-panel { width: 100%; height: 68px; background: repeating-linear-gradient(45deg, #3a3733 0px, #3a3733 3px, #32302c 3px, #32302c 6px); border-bottom: 2px solid #24221f; display: flex; align-items: flex-end; padding: 0 30px; flex-shrink: 0; }
+        .tab { padding: 8px 35px 7px 35px; font-size: 22px; font-weight: 800; letter-spacing: 1px; border-radius: 8px 8px 0 0; border: 2px solid #3c3833; border-bottom: none; color: #7a756d; background: #2e2b27; position: relative; bottom: -2px; cursor: pointer; outline: none !important; text-decoration: none; display: inline-block; }
+        .tab.inactive { margin-left: 5px; background: #36332e; }
+
+        .header-area { display: flex; justify-content: center; align-items: center; padding: 2px 30px 8px 30px; position: relative; }
+        .header-title { color: #b5b2ac; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; }
+        .header-help { position: absolute; right: 30px; top: 4px; color: #b5b2ac; font-size: 14px; background: #3a3733; border: 1px solid #525048; border-radius: 4px; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+
+        .main-grid { display: flex; flex: 1; flex-direction: column; justify-content: center; padding: 0px 30px 15px 30px; gap: 35px; }
+        .row-classes { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+        .row-items { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; }
+
+        .slot { background-color: transparent; border: none; display: flex; align-items: flex-end; justify-content: center; position: relative; transition: transform 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.1); height: 165px; width: auto; flex: 0 0 auto; cursor: pointer; text-decoration: none; }
+        .slot.item { width: 75px; height: 75px; align-items: center; flex-direction: column; flex: none; }
+
+        .slot img { display: block; height: 100%; width: auto; max-width: 100px; object-fit: contain; object-position: bottom center; filter: sepia(0.8) saturate(0.3) brightness(0.65) contrast(0.9); transition: filter 0.2s ease-in-out, transform 0.1s linear; pointer-events: none; }
+        .slot.item img { height: auto; width: 80%; max-width: 100%; object-position: center; filter: sepia(0.8) saturate(0.3) brightness(0.65) contrast(0.9); }
+
+        .slot-label { color: #9d9a94; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-align: center; text-transform: uppercase; margin-top: 10px; transition: color 0.2s ease; pointer-events: none; }
+
+        .slot:hover, .slot:active { transform: scale(1.15) translateY(-5px); z-index: 10; }
+        .slot:hover img, .slot:active img { filter: grayscale(0%) sepia(0) saturate(100%) brightness(1) contrast(1) !important; }
+        .slot:hover .slot-label, .slot:active .slot-label { color: #e8d374; }
+
+        .bottom-bar { border-top: 2px solid #47443e; background-color: #2e2b27; padding: 8px 30px 12px 30px; display: flex; justify-content: flex-start; flex-shrink: 0; width: 100%; min-height: 48px; }
+        .btn-back { background: #918980; color: #1c1a17; padding: 5px 20px; border-radius: 4px; font-size: 15px; font-weight: bold; display: flex; align-items: center; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #1a1816; cursor: pointer; outline: none !important; text-decoration: none; }
+        .btn-back span { margin-right: 8px; font-weight: normal; font-size: 17px; }
+    </style>
+</head>
+<body>
+    <div class="ui-container">
+        <div class="top-panel">
+            <!-- Ссылки на HTML файлы -->
+            <a href="#" class="tab inactive" onclick="loadPage('inventory.html'); return false;">LOADOUT</a>
+            <a href="#" class="tab inactive" onclick="loadPage('analytic.html'); return false;">STATS</a>
+        </div>
+
+        <div class="header-area">
+            <div class="header-title">SELECT A CLASS TO MODIFY LOADOUT</div>
+            <div class="header-help">?</div>
+        </div>
+
+        <div class="main-grid">
+            <div class="row-classes">
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Scout'); return false;"><img src="images/class/red/Scout.png" alt="Scout" style="transform: scale(1.4); transform-origin: bottom center;"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Soldier'); return false;"><img src="images/class/red/Soldier.png" alt="Soldier" style="transform: scale(1.4); transform-origin: bottom center;"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Pyro'); return false;"><img src="images/class/red/Pyro.png" alt="Pyro"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Demoman'); return false;"><img src="images/class/red/Demoman.png" alt="Demoman" style="transform: scale(1.4); transform-origin: bottom center;"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Heavy'); return false;"><img src="images/class/red/Heavy.png" alt="Heavy" style="transform: scale(1.4); transform-origin: bottom center;"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Engineer'); return false;"><img src="images/class/red/Engineer.png" alt="Engineer" style="transform: scale(1.4); transform-origin: bottom center;"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Medic'); return false;"><img src="images/class/red/Medic.png" alt="Medic"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Sniper'); return false;"><img src="images/class/red/Sniper.png" alt="Sniper"></a>
+                <a href="#" class="slot" onclick="loadPage('inventory.html?class=Spy'); return false;"><img src="images/class/red/Spy.png" alt="Spy"></a>
+            </div>
+
+            <div class="row-items">
+                <a href="#" class="slot item" onclick="loadPage('backpack.html'); return false;">
+                    <img src="images/icon/Backpack_case.png" alt="Backpack">
+                    <div class="slot-label">Backpack</div>
+                </a>
+                <div class="slot item">
+                    <img src="images/icon/Crafting_anvil.png" alt="Crafting">
+                    <div class="slot-label">Crafting</div>
+                </div>
+                <div class="slot item">
+                    <img src="images/icon/Catalog_book.png" alt="Mann Co.">
+                    <div class="slot-label">Mann Co.</div>
+                </div>
+                <div class="slot item">
+                    <img src="images/icon/Trading_parcel.png" alt="Trading">
+                    <div class="slot-label">Trading</div>
+                </div>
+                <div class="slot item">
+                    <img src="images/icon/Paint_icon.png" alt="War Paints">
+                    <div class="slot-label">War Paints</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <a href="#" class="btn-back" onclick="loadPage('main_menu.html'); return false;"><span>&lt;&lt;</span> BACK</a>
+        </div>
+    </div>
+</body>
+</html>

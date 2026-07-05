@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TF2 Inventory</title>
+    <style>
+        @font-face {
+            font-family: 'TF2';
+            src: url('tf2build.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'TF2', 'Segoe UI', Arial, sans-serif; padding: 10px; }
+        
+        .ui-container { 
+            width: 1024px; max-width: 100%; height: 90vh; max-height: 576px; 
+            background-color: #2e2b27; padding: 0; display: flex; flex-direction: column; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow: hidden; 
+        }
+
+        .top-panel { width: 100%; height: 68px; background: repeating-linear-gradient(45deg, #3a3733 0px, #3a3733 3px, #32302c 3px, #32302c 6px); border-bottom: 2px solid #24221f; display: flex; align-items: flex-end; padding: 0 30px; flex-shrink: 0; }
+        .tab { padding: 8px 35px 7px 35px; font-size: 22px; font-weight: 800; letter-spacing: 1px; border-radius: 8px 8px 0 0; border: 2px solid #3c3833; border-bottom: none; color: #7a756d; background: #2e2b27; position: relative; bottom: -2px; cursor: pointer; outline: none !important; text-decoration: none; display: inline-block; }
+        .tab.inactive { margin-left: 5px; background: #36332e; }
+        .tab.active { background: #2e2b27; color: #e8e5df; border-color: #3c3833; z-index: 2; height: 38px; }
+
+        .header-area { display: flex; align-items: center; padding: 15px 25px 15px 25px; position: relative; }
+        #class-title { font-size: 24px; font-weight: 800; color: #e8e5df; display: flex; align-items: center; letter-spacing: 0.5px; text-transform: uppercase; }
+        .arrows { color: #d24531; margin-right: 10px; font-size: 18px; font-weight: bold; }
+        .dashed-line { flex-grow: 1; border-bottom: 3px dotted #524c44; margin: 0 10px; position: relative; top: 3px; }
+        .equipped-text { font-size: 12px; color: #a09b94; letter-spacing: 0.5px; white-space: nowrap; }
+
+        .loadout-grid { display: flex; flex: 1; gap: 25px; padding: 0 25px 5px 25px; position: relative; }
+        .loadout-column { display: flex; flex-direction: column; gap: 10px; width: 210px; }
+        .loadout-column.right { width: 210px; padding-top: 45px; }
+        .slot { border: 2px solid #5c5750; border-radius: 8px; height: 68px; display: flex; align-items: center; justify-content: center; background-color: #2b2824; color: #524e48; font-size: 14px; font-weight: bold; box-shadow: inset 0 2px 5px rgba(0,0,0,0.7); }
+        .slot.right-slot { height: 58px; }
+
+        .center-area { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .loadout-selectors { display: flex; gap: 8px; position: absolute; top: -15px; }
+        .selector-btn { width: 28px; height: 28px; background: #5c5851; color: #a7a39b; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; box-shadow: inset 0 -2px 0 #3e3b36; cursor: pointer; outline: none !important; transition: 0.1s; }
+        .selector-btn.active { background: #d04531 !important; color: #fff !important; box-shadow: inset 0 -2px 0 #8f2d1e !important; }
+
+        .wear-status { position: absolute; bottom: 15px; text-align: center; font-size: 13px; line-height: 1.5; color: #a09b94; }
+        .wear-status .yellow { color: #e8d374; }
+
+        .bottom-bar { border-top: 2px solid #47443e; background-color: #2e2b27; padding: 8px 30px 12px 30px; display: flex; justify-content: flex-start; flex-shrink: 0; width: 100%; min-height: 48px; }
+        .btn-back { background: #918980; color: #1c1a17; padding: 5px 20px; border-radius: 4px; font-size: 15px; font-weight: bold; display: flex; align-items: center; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #1a1816; cursor: pointer; outline: none !important; text-decoration: none; }
+        .btn-back span { margin-right: 8px; font-weight: normal; font-size: 17px; }
+    </style>
+</head>
+<body>
+    <div class="ui-container">
+        <div class="top-panel">
+            <a href="#" class="tab active" style="pointer-events: none; cursor: default;">LOADOUT</a>
+            <a href="#" class="tab inactive" onclick="loadPage('analytic.html'); return false;">STATS</a>
+        </div>
+
+        <div class="header-area">
+            <div class="medic-title" id="class-title"><span class="arrows">>></span> MEDIC</div>
+            <div class="dashed-line"></div>
+            <div class="equipped-text">CURRENTLY EQUIPPED:</div>
+        </div>
+
+        <div class="loadout-grid">
+            <div class="loadout-column">
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+            </div>
+            <div class="center-area">
+                <div class="loadout-selectors">
+                    <div class="selector-btn" onclick="setActive(this)">A</div>
+                    <div class="selector-btn active" onclick="setActive(this)">B</div>
+                    <div class="selector-btn" onclick="setActive(this)">C</div>
+                    <div class="selector-btn" onclick="setActive(this)">D</div>
+                </div>
+                <div class="wear-status">
+                    <span class="yellow">Current on-wear attributes:</span><br>
+                    <span>None</span>
+                </div>
+            </div>
+            <div class="loadout-column right">
+                <div class="slot"></div><div class="slot right-slot">MISC</div><div class="slot right-slot">MISC</div><div class="slot right-slot">ACTION</div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <a href="#" class="btn-back" onclick="loadPage('election_piece.html'); return false;"><span>&lt;&lt;</span> BACK</a>
+        </div>
+    </div>
+
+    <script>
+        function setActive(element) {
+            const buttons = element.parentElement.children;
+            for (let btn of buttons) btn.classList.remove('active');
+            element.classList.add('active');
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const className = urlParams.get('class');
+            const titleElement = document.getElementById('class-title');
+            if (className && titleElement) {
+                titleElement.innerHTML = `<span class="arrows">>></span> ${className}`;
+            }
+        });
+    </script>
+</body>
+</html>

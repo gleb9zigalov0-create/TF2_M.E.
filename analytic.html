@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TF2 Stats</title>
+    <style>
+        @font-face {
+            font-family: 'TF2';
+            src: url('tf2build.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'TF2', 'Segoe UI', Tahoma, sans-serif; padding: 10px; }
+        
+        .ui-container { 
+            width: 1024px; max-width: 100%; height: 90vh; max-height: 576px; 
+            background-color: #2e2b27; padding: 0; display: flex; flex-direction: column; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow: hidden; 
+        }
+
+        .top-panel { 
+            width: 100%; height: 68px; 
+            background: repeating-linear-gradient(45deg, #3a3733 0px, #3a3733 3px, #32302c 3px, #32302c 6px); 
+            border-bottom: 2px solid #24221f; 
+            display: flex; align-items: flex-end; padding: 0 30px; 
+            flex-shrink: 0; 
+        }
+
+        .tab { 
+            padding: 8px 35px 7px 35px; font-size: 22px; font-weight: 800; letter-spacing: 1px; 
+            border-radius: 8px 8px 0 0; border: 2px solid #3c3833; border-bottom: none; 
+            color: #7a756d; background: #2e2b27; position: relative; bottom: -2px; 
+            cursor: pointer; outline: none !important; text-decoration: none; display: inline-block; 
+        }
+        .tab.inactive { margin-left: 5px; background: #36332e; }
+        .tab.active { background: #2e2b27; color: #e8e5df; border-color: #3c3833; z-index: 2; height: 38px; }
+
+        .main-grid { display: flex; flex: 1; gap: 20px; padding: 15px 30px 5px 30px; align-items: stretch; }
+        .panel { border: 2px solid #5c5750; border-radius: 12px; background-color: #2e2b27; padding: 12px 15px; display: flex; flex-direction: column; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); position: relative; }
+        .panel-left { flex: 2.5; } 
+        .panel-right { flex: 1; min-width: 220px; }
+        .panel-title { color: #e8e5df; font-size: 22px; font-weight: 800; letter-spacing: 1px; text-align: center; margin-bottom: 10px; }
+
+        .perf-header { display: flex; gap: 12px; margin-bottom: 8px; }
+        .dropdown {
+            background: #2e2b27; border: 2px solid #525048; color: #c7c3bb; padding: 4px 12px; 
+            font-size: 13px; font-weight: bold; border-radius: 2px; cursor: pointer; flex: 1; 
+            display: flex; align-items: center; justify-content: space-between;
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 50%, transparent 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .dropdown::after { content: "▼"; font-size: 11px; color: #c7c3bb; margin-left: 10px; }
+
+        .perf-grid { display: flex; flex: 1; gap: 10px; margin-bottom: 5px; }
+        .col-data { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .col-names { width: 75px; display: flex; flex-direction: column; gap: 4px; justify-content: flex-start; }
+
+        .stat-row { display: flex; align-items: center; height: 18px; gap: 0px; }
+        .digits-box {
+            width: 45px; height: 100%; display: flex; align-items: center; justify-content: flex-end;
+            color: #e8e5df; font-size: 12px; font-weight: bold; padding-right: 5px;
+            background-color: #1c1a17;
+        }
+        .bar-wrapper { flex: 1; height: 100%; background-color: #1c1a17; position: relative; display: flex; align-items: center; }
+        .bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+        
+        .bar-fill.orange { background: #b2703d; }
+        .bar-fill.tan { background: #b0977b; }
+        .bar-fill.lightgrey { background: #bdb9b3; }
+        .bar-fill.brown { background: #835f3c; }
+        .bar-fill.cream { background: #c4ab92; }
+
+        .row-label { color: #e8e5df; font-size: 14px; font-weight: normal; height: 18px; line-height: 18px; text-align: left; width: 100%; }
+
+        .tip-box { border-top: 2px solid #47443e; padding-top: 8px; display: flex; align-items: center; gap: 12px; }
+        .tip-avatar { width: 38px; height: 38px; background-color: #1c1a17; border: 2px solid #525048; display: flex; justify-content: center; align-items: center; border-radius: 4px; }
+        .tip-avatar::after { content: "🧑‍🚒"; font-size: 20px; }
+        .tip-text { color: #b5b2ac; font-size: 11px; font-style: italic; line-height: 1.3; flex: 1; }
+        .btn-next-tip { background: #a09b93; color: #1a1816; padding: 3px 10px; font-size: 11px; font-weight: bold; border: none; outline: none; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); border-radius: 2px; cursor: pointer; }
+
+        .moments-dropdown {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            background: #2e2b27; border: 2px solid #525048; color: #c7c3bb; padding: 3px 10px; 
+            font-size: 13px; border-radius: 2px; margin-bottom: 10px; cursor: pointer;
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 50%, transparent 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .moments-dropdown::after { content: "▼"; font-size: 11px; color: #c7c3bb; }
+
+        .moments-list { display: flex; flex: 1; flex-direction: column; gap: 2px; justify-content: flex-start; }
+        .moments-row { display: flex; justify-content: space-between; color: #d9d6ce; font-size: 12px; padding: 1px 0; }
+        .moments-row span:first-child { color: #b5b2ac; }
+        .moments-row span:last-child { color: #d9d6ce; }
+
+        .btn-reset-stats { background: #a09b93; color: #1a1816; padding: 4px 15px; font-size: 13px; font-weight: bold; border: none; outline: none; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); width: fit-content; border-radius: 2px; cursor: pointer; margin-top: 5px; }
+
+        .bottom-bar { border-top: 2px solid #47443e; background-color: #2e2b27; padding: 10px 30px 12px 30px; display: flex; justify-content: flex-start; flex-shrink: 0; width: 100%; min-height: 48px; }
+        .btn-back { background: #918980; color: #1c1a17; padding: 5px 20px; border-radius: 4px; font-size: 15px; font-weight: bold; display: flex; align-items: center; box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 #1a1816; cursor: pointer; outline: none !important; text-decoration: none; }
+        .btn-back span { margin-right: 8px; font-weight: normal; font-size: 17px; }
+    </style>
+</head>
+<body>
+    <div class="ui-container">
+        <div class="top-panel">
+            <a href="#" class="tab inactive" onclick="loadPage('main_menu.html'); return false;">LOADOUT</a>
+            <div class="tab active">STATS</div>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel panel-left">
+                <div class="panel-title">YOUR PERFORMANCE REPORT</div>
+                <div class="perf-header">
+                    <div class="dropdown">Most points</div>
+                    <div class="dropdown">Total playtime</div>
+                </div>
+                <div class="perf-grid">
+                    <div class="col-data">
+                        <div class="stat-row"><div class="digits-box">120</div><div class="bar-wrapper"><div class="bar-fill lightgrey" style="width: 45%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">30</div><div class="bar-wrapper"><div class="bar-fill orange" style="width: 35%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">18</div><div class="bar-wrapper"><div class="bar-fill brown" style="width: 25%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">20</div><div class="bar-wrapper"><div class="bar-fill orange" style="width: 30%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">23</div><div class="bar-wrapper"><div class="bar-fill cream" style="width: 30%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">12</div><div class="bar-wrapper"><div class="bar-fill lightgrey" style="width: 20%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">17</div><div class="bar-wrapper"><div class="bar-fill cream" style="width: 25%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">18</div><div class="bar-wrapper"><div class="bar-fill brown" style="width: 25%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">320</div><div class="bar-wrapper"><div class="bar-fill orange" style="width: 100%"></div></div></div>
+                    </div>
+                    <div class="col-data">
+                        <div class="stat-row"><div class="digits-box">3:01:41</div><div class="bar-wrapper"><div class="bar-fill lightgrey" style="width: 100%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">0:11:43</div><div class="bar-wrapper"><div class="bar-fill orange" style="width: 75%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">7:28:57</div><div class="bar-wrapper"><div class="bar-fill brown" style="width: 35%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">2:32:04</div><div class="bar-wrapper"><div class="bar-fill orange" style="width: 25%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">1:00:21</div><div class="bar-wrapper"><div class="bar-fill cream" style="width: 25%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">4:21:32</div><div class="bar-wrapper"><div class="bar-fill lightgrey" style="width: 18%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">9:15:04</div><div class="bar-wrapper"><div class="bar-fill cream" style="width: 15%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">5:37:19</div><div class="bar-wrapper"><div class="bar-fill brown" style="width: 10%"></div></div></div>
+                        <div class="stat-row"><div class="digits-box">4:18:53</div><div class="bar-wrapper"><div class="bar-fill orange" style="width: 8%"></div></div></div>
+                    </div>
+                    <div class="col-names">
+                        <div class="row-label">Engineer</div>
+                        <div class="row-label">Spy</div>
+                        <div class="row-label">Demoman</div>
+                        <div class="row-label">Soldier</div>
+                        <div class="row-label">Pyro</div>
+                        <div class="row-label">Scout</div>
+                        <div class="row-label">Medic</div>
+                        <div class="row-label">Sniper</div>
+                        <div class="row-label">Heavy</div>
+                    </div>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-avatar"></div>
+                    <div class="tip-text">As a Pyro, your flamethrower can ignite an enemy Spy if he is cloaked, or is disguised as a member of your team. Spy check teammates that look or act suspicious!</div>
+                    <button class="btn-next-tip">NEXT TIP</button>
+                </div>
+            </div>
+
+            <div class="panel panel-right">
+                <div class="panel-title">YOUR BEST MOMENTS</div>
+                <div class="moments-dropdown">As any class:</div>
+                <div class="moments-list">
+                    <div class="moments-row"><span>Most points:</span><span>320 (Heavy)</span></div>
+                    <div class="moments-row"><span>Most kills:</span><span>200 (Heavy)</span></div>
+                    <div class="moments-row"><span>Most assists:</span><span>140 (Heavy)</span></div>
+                    <div class="moments-row"><span>Most captures:</span><span>10 (Eng.)</span></div>
+                    <div class="moments-row"><span>Most defenses:</span><span>5 (Eng.)</span></div>
+                    <div class="moments-row"><span>Most damage:</span><span>30575 (Heavy)</span></div>
+                    <div class="moments-row"><span>Most destruction:</span><span>14 (Spy)</span></div>
+                    <div class="moments-row"><span>Most dominations:</span><span>9 (Heavy)</span></div>
+                    <div class="moments-row"><span>Longest life:</span><span>13:07 (Eng.)</span></div>
+                    <div class="moments-row"><span>Most healing:</span><span>2972 (Medic)</span></div>
+                    <div class="moments-row"><span>Most invulns:</span><span>3 (Medic)</span></div>
+                    <div class="moments-row"><span>Kills by sentry:</span><span>78 (Eng.)</span></div>
+                    <div class="moments-row"><span>Most teleports:</span><span>79 (Eng.)</span></div>
+                    <div class="moments-row"><span>Most headshots:</span><span>3 (Sniper)</span></div>
+                    <div class="moments-row"><span>Most backstabs:</span><span>12 (Spy)</span></div>
+                </div>
+                <button class="btn-reset-stats">RESET STATS</button>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <a href="#" class="btn-back" onclick="loadPage('main_menu.html'); return false;"><span>&lt;&lt;</span> BACK</a>
+        </div>
+    </div>
+</body>
+</html>
