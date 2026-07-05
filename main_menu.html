@@ -441,7 +441,7 @@
                         <div class="medal-wrapper"><img id="levelMedal" src="" alt="Rank"></div>
                         <div class="player-info-box">
                             <div class="player-name-row">
-                                <span class="player-name">USERLIVERFULL</span>
+                                <span class="player-name" id="displayName">USERLIVERFULL</span>
                                 <span class="player-level-text" id="playerLevelText">УРОВЕНЬ: 0</span>
                             </div>
                             <div class="player-progress-row">
@@ -453,7 +453,7 @@
                             </div>
                         </div>
                     </div>
-                    <img src="images/icon/setting.jpg" class="settings-icon-inside" alt="Settings">
+                    <img src="images/icon/setting.jpg" class="settings-icon-inside" onclick="openSettings()" alt="Settings">
                 </div>
                 <div class="inner-panel">
                     <div class="panel-title"><span>ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ</span></div>
@@ -495,14 +495,167 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК -->
+    <div id="settingsModal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 28, 25, 0.7); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
+        <div style="background: rgba(46, 43, 39, 0.9); border: 2px solid #c7b89e; border-radius: 8px; padding: 20px 25px; width: 360px; max-width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 15px; position: relative;">
+            
+            <!-- Крестик закрытия -->
+            <div style="position: absolute; top: 10px; right: 15px; color: #c7b89e; font-size: 24px; cursor: pointer; font-weight: bold; transition: 0.2s;" onmouseover="this.style.color='#e8e5df'" onmouseout="this.style.color='#c7b89e'" onclick="closeSettings()">&times;</div>
+
+            <!-- Заголовок -->
+            <div style="color: #e8e5df; font-size: 20px; font-weight: 800; letter-spacing: 1px; border-bottom: 2px solid #c7b89e; padding-bottom: 8px; margin-right: 25px;">
+                НАСТРОЙКИ РЕЖИМА
+            </div>
+
+            <!-- Никнейм -->
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="color: #b5b2ac; font-size: 13px; font-weight: bold;">НИКНЕЙМ</label>
+                <input type="text" id="nicknameInput" value="USERLIVERFULL" style="background: #2e2b27; border: 2px solid #5c5750; border-radius: 4px; color: #e8e5df; padding: 6px 10px; font-size: 14px; font-weight: bold; outline: none;">
+            </div>
+
+            <!-- Переключатель режимов -->
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <span style="color: #b5b2ac; font-size: 13px; font-weight: bold;">РЕЖИМ ИГРЫ</span>
+                <div style="display: flex; gap: 10px;">
+                    <button id="modeCasual" onclick="setMode('casual')" style="flex: 1; background: #3d8b38; color: #fff; border: none; padding: 8px 0; border-radius: 4px; font-weight: bold; cursor: pointer;">Свободный</button>
+                    <button id="modeCompetitive" onclick="setMode('competitive')" style="flex: 1; background: #5c5750; color: #b5b2ac; border: none; padding: 8px 0; border-radius: 4px; font-weight: bold; cursor: pointer;">Соревновательный</button>
+                </div>
+            </div>
+
+            <!-- Кнопка применить -->
+            <button onclick="applySettings()" style="background: #c7b89e; color: #2e2b27; border: none; padding: 10px; border-radius: 4px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 5px; transition: 0.2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='brightness(1)'">ПРИМЕНИТЬ</button>
+            
+        </div>
+    </div>
+
     <script>
+        // =========================================================
+        // ОТКРЫТИЕ И ЗАКРЫТИЕ ОКНА
+        // =========================================================
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+            // Загружаем текущие данные в окно
+            document.getElementById('nicknameInput').value = localStorage.getItem('tf2_nickname') || 'USERLIVERFULL';
+            updateModeButtons();
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Закрытие по клику вне окна
+        document.getElementById('settingsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSettings();
+            }
+        });
+
+        // =========================================================
+        // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ РЕЖИМОВ
+        // =========================================================
+        let currentMode = localStorage.getItem('tf2_mode') || 'casual';
+
+        function updateModeButtons() {
+            const casualBtn = document.getElementById('modeCasual');
+            const compBtn = document.getElementById('modeCompetitive');
+            
+            if (currentMode === 'casual') {
+                casualBtn.style.background = '#3d8b38';
+                casualBtn.style.color = '#fff';
+                compBtn.style.background = '#5c5750';
+                compBtn.style.color = '#b5b2ac';
+            } else {
+                casualBtn.style.background = '#5c5750';
+                casualBtn.style.color = '#b5b2ac';
+                compBtn.style.background = '#3d8b38';
+                compBtn.style.color = '#fff';
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            updateModeButtons();
+        }
+
+        // =========================================================
+        // ПРИМЕНЕНИЕ НАСТРОЕК
+        // =========================================================
+        function applySettings() {
+            // Сохраняем никнейм
+            const newNick = document.getElementById('nicknameInput').value.trim();
+            if (newNick) {
+                localStorage.setItem('tf2_nickname', newNick);
+                document.getElementById('displayName').innerText = newNick;
+            }
+
+            // Сохраняем режим
+            localStorage.setItem('tf2_mode', currentMode);
+            
+            // Обновляем уровень и медаль в зависимости от режима
+            const playerLevel = currentMode === 'competitive' ? 5 : 4;
+            const medalImg = document.getElementById('levelMedal');
+            document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
+            medalImg.src = `images/levels/${playerLevel}.png`;
+            medalImg.style.display = 'block';
+            medalImg.onerror = function() { this.style.display = 'none'; };
+
+            // Закрываем окно
+            closeSettings();
+        }
+
+        // =========================================================
+        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
+        // =========================================================
         document.addEventListener("DOMContentLoaded", function() {
             
-            // =========================================================
-            // СИСТЕМА ФЛАГА ЗАГРУЗКИ
-            // =========================================================
-            const hasLoaded = sessionStorage.getItem('tf2_loaded');
+            // Восстанавливаем никнейм
+            const savedNick = localStorage.getItem('tf2_nickname');
+            if (savedNick) {
+                document.getElementById('displayName').innerText = savedNick;
+            }
 
+            // Восстанавливаем режим и медаль
+            const savedMode = localStorage.getItem('tf2_mode') || 'casual';
+            currentMode = savedMode;
+            const playerLevel = currentMode === 'competitive' ? 5 : 4;
+            const medalImg = document.getElementById('levelMedal');
+            document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
+            medalImg.src = `images/levels/${playerLevel}.png`;
+            medalImg.onerror = function() { this.style.display = 'none'; };
+
+            // ФОН
+            const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
+            let savedBg = localStorage.getItem('tf2_saved_bg');
+            if (!savedBg) {
+                savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                localStorage.setItem('tf2_saved_bg', savedBg);
+            }
+            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${savedBg}')`;
+
+            // ПЕРСОНАЖ
+            const classes = [
+                "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
+                "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
+            ];
+            let savedClass = localStorage.getItem('tf2_saved_class');
+            if (!savedClass) {
+                savedClass = classes[Math.floor(Math.random() * classes.length)];
+                localStorage.setItem('tf2_saved_class', savedClass);
+            }
+            const charImg = document.getElementById('menuCharacter');
+            charImg.src = `images/class/red/${savedClass}`;
+            charImg.style.height = "150%";
+            charImg.style.bottom = "-55%";
+            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(savedClass)) {
+                charImg.style.right = "-60px";
+            } else if (savedClass === "Spy.png" || savedClass === "Sniper.png") {
+                charImg.style.right = "70px";
+            } else {
+                charImg.style.right = "30px";
+            }
+
+            // ФЛАГ ЗАГРУЗКИ
+            const hasLoaded = sessionStorage.getItem('tf2_loaded');
             if (hasLoaded === 'true') {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('mainUI').classList.add('loaded');
@@ -513,60 +666,8 @@
                     document.getElementById('mainUI').classList.add('loaded');
                 }, 2000);
             }
-            
-            // =========================================================
-            // ФОН (Запоминаем в localStorage)
-            // =========================================================
-            const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
-            let savedBg = localStorage.getItem('tf2_saved_bg');
-            
-            // Если сохранённого фона нет, выбираем случайный и сохраняем
-            if (!savedBg) {
-                savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-                localStorage.setItem('tf2_saved_bg', savedBg);
-            }
-            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${savedBg}')`;
 
-            // =========================================================
-            // ПЕРСОНАЖ (Запоминаем в localStorage)
-            // =========================================================
-            const classes = [
-                "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
-                "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
-            ];
-            let savedClass = localStorage.getItem('tf2_saved_class');
-            
-            // Если сохранённого класса нет, выбираем случайный и сохраняем
-            if (!savedClass) {
-                savedClass = classes[Math.floor(Math.random() * classes.length)];
-                localStorage.setItem('tf2_saved_class', savedClass);
-            }
-
-            const charImg = document.getElementById('menuCharacter');
-            charImg.src = `images/class/red/${savedClass}`;
-            charImg.style.height = "150%";
-            charImg.style.bottom = "-55%";
-
-            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(savedClass)) {
-                charImg.style.right = "-60px";
-            } else if (savedClass === "Spy.png" || savedClass === "Sniper.png") {
-                charImg.style.right = "70px";
-            } else {
-                charImg.style.right = "30px";
-            }
-
-            // =========================================================
-            // УРОВЕНЬ И МЕДАЛЬ
-            // =========================================================
-            let playerLevel = 4; 
-            const medalImg = document.getElementById('levelMedal');
-            document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
-            medalImg.src = `images/levels/${playerLevel}.png`;
-            medalImg.onerror = function() { this.style.display = 'none'; };
-
-            // =========================================================
             // МУЗЫКА
-            // =========================================================
             const tracks = [
                 "sounds/main_menu/1.mp3",
                 "sounds/main_menu/2.mp3",
