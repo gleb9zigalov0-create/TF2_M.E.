@@ -401,7 +401,8 @@
 </head>
 <body>
 
-    <audio id="bgMusic" loop></audio>
+    <!-- НЕВИДИМЫЙ ПЛЕЕР, КОТОРЫЙ НИКОГДА НЕ ПЕРЕЗАГРУЖАЕТСЯ -->
+    <iframe src="player.html" style="width:0; height:0; border:none; position:absolute;"></iframe>
 
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-text">Загрузка...</div>
@@ -525,44 +526,12 @@
             medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
-            const tracks = [
-                "sounds/main_menu/1.mp3",
-                "sounds/main_menu/2.mp3",
-                "sounds/main_menu/3.mp3"
-            ];
-            let currentTrackIndex = 0;
-            const audioPlayer = document.getElementById('bgMusic');
+            // Управление плеером в iframe
             const musicBtn = document.getElementById('musicToggle');
-
-            const savedTrack = localStorage.getItem('tf2_current_track');
-            if (savedTrack !== null) {
-                currentTrackIndex = parseInt(savedTrack, 10);
-            } else {
-                currentTrackIndex = Math.floor(Math.random() * tracks.length);
-            }
-
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('mainUI').classList.add('loaded');
-                
-                audioPlayer.src = tracks[currentTrackIndex];
-                audioPlayer.load();
-                // Принудительный запуск с повторной попыткой
-                audioPlayer.play().catch(() => {
-                    setTimeout(() => {
-                        audioPlayer.play().catch(() => {});
-                    }, 500);
-                });
-            }, 2000);
-
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
-                localStorage.setItem('tf2_current_track', currentTrackIndex);
-                
-                audioPlayer.src = tracks[currentTrackIndex];
-                audioPlayer.load();
-                audioPlayer.play().catch(() => {});
+                // Отправляем команду в iframe
+                document.querySelector('iframe').contentWindow.postMessage('next_track', '*');
             });
         });
     </script>
