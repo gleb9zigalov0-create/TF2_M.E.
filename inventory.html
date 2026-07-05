@@ -96,6 +96,7 @@
             for (let btn of buttons) btn.classList.remove('active');
             element.classList.add('active');
         }
+
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             const className = urlParams.get('class');
@@ -103,6 +104,32 @@
             if (className && titleElement) {
                 titleElement.innerHTML = `<span class="arrows">>></span> ${className}`;
             }
+
+            // Музыка
+            const tracks = [
+                "sounds/main_menu/1.mp3",
+                "sounds/main_menu/2.mp3",
+                "sounds/main_menu/3.mp3"
+            ];
+            let currentTrackIndex = 0;
+            const audioPlayer = document.getElementById('bgMusic');
+
+            const savedTrack = localStorage.getItem('tf2_current_track');
+            if (savedTrack !== null) {
+                currentTrackIndex = parseInt(savedTrack, 10);
+            } else {
+                currentTrackIndex = Math.floor(Math.random() * tracks.length);
+            }
+
+            setTimeout(() => {
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                audioPlayer.play().catch(() => {
+                    setTimeout(() => {
+                        audioPlayer.play().catch(() => {});
+                    }, 500);
+                });
+            }, 300);
         });
     </script>
 </body>
