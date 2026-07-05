@@ -175,28 +175,62 @@
         .btn-power:hover, .btn-power:active { filter: brightness(1.1); }
         .btn-power img { width: 18px; height: 18px; object-fit: contain; }
 
+        /* =========================================================
+           НОВЫЕ КНОПКИ (ТЕЛЕВИЗОР, ОТЗЫВЫ, АНТИВИРУС)
+           ========================================================= */
         .top-utility-icons {
             display: flex;
-            gap: 10px; 
+            gap: 8px; 
             margin-top: 10px;
             position: relative;
             align-items: center;
         }
-        .utility-icon {
-            width: 32px; height: 32px; 
+        
+        .utility-btn {
+            width: 34px; 
+            height: 34px; 
             background: rgba(50, 40, 30, 0.85); 
             border: 1px solid rgba(255,255,255,0.15); 
-            border-radius: 3px;
-            display: flex; align-items: center; justify-content: center;
+            /* СКРУГЛЯЕМ КВАДРАТНУЮ КАРТИНКУ */
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.5);
+            position: relative;
         }
-        .utility-icon:hover, .utility-icon:active {
+        .utility-btn:hover {
             background: rgba(80, 60, 40, 0.9);
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
-        .utility-icon img { width: 20px; height: 20px; object-fit: contain; }
+        .utility-btn:active {
+            transform: scale(0.95);
+            filter: brightness(1.2);
+        }
+        .utility-btn img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        /* Всплывающая подсказка при наведении */
+        .utility-btn:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+        }
 
         /* =========================================================
            УВЕДОМЛЕНИЕ (Большая иконка)
@@ -614,15 +648,28 @@
                 </div>
                 
                 <div class="top-utility-icons">
-                    <div class="utility-icon"><img src="images/icon/icon_games.png" alt="Games"></div>
-                    <div class="utility-icon"><img src="images/icon/win_is_games.png" alt="Win"></div>
                     
+                    <!-- НОВАЯ КНОПКА: ТВ (Телевизор / Трансляции) -->
+                    <div class="utility-btn" data-tooltip="Трансляции" onclick="alert('ТВ-трансляции пока в разработке!')">
+                        <img src="images/icon/tv.png" alt="TV">
+                    </div>
+
+                    <!-- НОВАЯ КНОПКА: Отзывы (Обзор / Оценка) -->
+                    <div class="utility-btn" data-tooltip="Отзывы" onclick="alert('Раздел отзывов пока в разработке!')">
+                        <img src="images/icon/reviwe.png" alt="Review">
+                    </div>
+
+                    <!-- НОВАЯ КНОПКА: Антивирус / Безопасность -->
+                    <div class="utility-btn" data-tooltip="Безопасность" onclick="alert('Антивирусная защита активна!')">
+                        <img src="images/icon/virus.png" alt="Virus">
+                    </div>
+                    
+                    <!-- УВЕДОМЛЕНИЕ -->
                     <div class="notification-wrapper" onclick="openAlerts()">
                         <img src="images/icon/notification.png" alt="Notifications">
                         <div class="notification-badge">1</div>
                     </div>
                     
-                    <div class="utility-icon"><img src="images/icon/buy.png" alt="Buy"></div>
                 </div>
             </div>
         </div>
@@ -773,7 +820,7 @@
 
     <script>
         // =========================================================
-        // ФУНКЦИЯ ДЛЯ ПАСХАЛКИ (Меняет фон и персонажа по клику)
+        // ПАСХАЛКА
         // =========================================================
         function randomizeBgAndChar() {
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
@@ -798,7 +845,6 @@
                 charImg.style.right = "30px";
             }
 
-            // Сохраняем в localStorage, чтобы при возврате через BACK сохранились новые
             localStorage.setItem('tf2_saved_bg', randomBg);
             localStorage.setItem('tf2_saved_class', randomClass);
         }
@@ -867,7 +913,6 @@
             medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
-            // Восстанавливаем фоны и персонажа из памяти
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
             let savedBg = localStorage.getItem('tf2_saved_bg');
             if (!savedBg) {
