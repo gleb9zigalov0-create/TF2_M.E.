@@ -401,7 +401,7 @@
 </head>
 <body>
 
-    <iframe src="player.html" style="width:0; height:0; border:none; position:absolute;"></iframe>
+    <audio id="bgMusic" loop></audio>
 
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-text">Загрузка...</div>
@@ -498,21 +498,20 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             
-            var backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
-            var randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-            document.getElementById('menuBackground').style.backgroundImage = 'url(images/background/' + randomBg + ')';
+            const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
+            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${backgrounds[Math.floor(Math.random() * backgrounds.length)]}')`;
 
-            var classes = [
+            const classes = [
                 "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
                 "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
             ];
-            var randomClass = classes[Math.floor(Math.random() * classes.length)];
-            var charImg = document.getElementById('menuCharacter');
-            charImg.src = 'images/class/red/' + randomClass;
+            const randomClass = classes[Math.floor(Math.random() * classes.length)];
+            const charImg = document.getElementById('menuCharacter');
+            charImg.src = `images/class/red/${randomClass}`;
             charImg.style.height = "150%";
             charImg.style.bottom = "-55%";
 
-            if (randomClass === "Soldier.png" || randomClass === "Demoman.png" || randomClass === "Heavy.png" || randomClass === "Engineer.png") {
+            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(randomClass)) {
                 charImg.style.right = "-60px";
             } else if (randomClass === "Spy.png" || randomClass === "Sniper.png") {
                 charImg.style.right = "70px";
@@ -520,16 +519,49 @@
                 charImg.style.right = "30px";
             }
 
-            var playerLevel = 4; 
-            var medalImg = document.getElementById('levelMedal');
-            document.getElementById('playerLevelText').innerText = 'УРОВЕНЬ: ' + playerLevel;
-            medalImg.src = 'images/levels/' + playerLevel + '.png';
+            let playerLevel = 4; 
+            const medalImg = document.getElementById('levelMedal');
+            document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
+            medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
-            var musicBtn = document.getElementById('musicToggle');
+            const tracks = [
+                "sounds/main_menu/1.mp3",
+                "sounds/main_menu/2.mp3",
+                "sounds/main_menu/3.mp3"
+            ];
+            let currentTrackIndex = 0;
+            const audioPlayer = document.getElementById('bgMusic');
+            const musicBtn = document.getElementById('musicToggle');
+
+            const savedTrack = localStorage.getItem('tf2_current_track');
+            if (savedTrack !== null) {
+                currentTrackIndex = parseInt(savedTrack, 10);
+            } else {
+                currentTrackIndex = Math.floor(Math.random() * tracks.length);
+            }
+
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('mainUI').classList.add('loaded');
+                
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                audioPlayer.play().catch(() => {
+                    setTimeout(() => {
+                        audioPlayer.play().catch(() => {});
+                    }, 500);
+                });
+            }, 2000);
+
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                document.querySelector('iframe').contentWindow.postMessage('next_track', '*');
+                currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+                localStorage.setItem('tf2_current_track', currentTrackIndex);
+                
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                audioPlayer.play().catch(() => {});
             });
         });
     </script>
