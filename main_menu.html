@@ -172,13 +172,13 @@
 
         .top-utility-icons {
             display: flex;
-            gap: 8px; /* Увеличили расстояние между иконками */
+            gap: 10px; 
             margin-top: 10px;
             position: relative;
             align-items: center;
         }
         .utility-icon {
-            width: 32px; height: 32px; /* Сделали иконки чуть больше */
+            width: 32px; height: 32px; 
             background: rgba(50, 40, 30, 0.85); 
             border: 1px solid rgba(255,255,255,0.15); 
             border-radius: 3px;
@@ -194,15 +194,15 @@
         .utility-icon img { width: 20px; height: 20px; object-fit: contain; }
 
         /* =========================================================
-           УВЕДОМЛЕНИЕ (Большая иконка + Цифра на месте)
+           УВЕДОМЛЕНИЕ (Кнопка больше, цифра справа)
            ========================================================= */
         .notification-wrapper {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 34px; /* Кнопка стала больше */
+            height: 34px;
             cursor: pointer;
             background: rgba(50, 40, 30, 0.85); 
             border: 1px solid rgba(255,255,255,0.15); 
@@ -221,8 +221,8 @@
         }
         .notification-badge {
             position: absolute;
-            top: -8px;
-            right: -10px;
+            top: -7px;
+            right: -8px; /* Цифра на своём месте */
             width: 18px;
             height: 18px;
             display: flex;
@@ -232,22 +232,19 @@
             font-weight: 900;
             color: #fff;
             text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
-            /* Имитация звезды, если нужно */
             z-index: 2;
-            background: transparent;
         }
 
         /* =========================================================
-           МОДАЛЬНОЕ ОКНО ALERTS (Появляется рядом с кнопкой)
+           МОДАЛЬНОЕ ОКНО ALERTS (Уменьшено, под кнопкой, без обводок)
            ========================================================= */
         .modal-alerts-container {
             display: none;
             position: absolute;
             z-index: 9998;
-            /* Окно будет появляться прямо под иконкой уведомлений */
-            top: 70px; 
-            right: 20px;
-            width: 380px;
+            top: 75px; 
+            right: 0px; /* Выровнено по правому краю */
+            width: 320px; /* Сделал компактнее */
         }
         .modal-alerts-container.active {
             display: block;
@@ -255,10 +252,10 @@
 
         .modal-alerts {
             background: #ede9df;
-            border: 2px solid #5c5750;
-            border-radius: 4px;
-            padding: 12px 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: none; /* Убрал обводку */
+            border-radius: 3px;
+            padding: 10px 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -275,25 +272,24 @@
             letter-spacing: 0.5px;
         }
         .modal-alerts-close {
-            font-size: 20px;
-            font-weight: bold;
-            color: #7a756d;
+            background: transparent;
+            border: none;
             cursor: pointer;
-            background: #5c5750;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 4px;
             transition: 0.2s;
         }
-        .modal-alerts-close:hover { background: #918980; color: #fff; }
+        .modal-alerts-close:hover { filter: brightness(0.8); }
+        .modal-alerts-close img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            filter: invert(1); /* Делаем красный крестик белым */
+        }
 
         .modal-alerts-body {
             background: #d4cec4;
-            border-radius: 4px;
-            padding: 8px 12px;
+            border-radius: 2px;
+            padding: 6px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -302,23 +298,21 @@
         }
         .modal-alerts-actions {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
         .alert-action-btn {
-            width: 24px;
-            height: 24px;
+            background: transparent;
             border: none;
-            border-radius: 3px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 4px;
             transition: 0.2s;
         }
-        .alert-action-btn:hover { filter: brightness(1.2); }
-        .alert-action-btn img { width: 14px; height: 14px; object-fit: contain; }
-        .btn-eye { background: #5c5750; }
-        .btn-close-alert { background: #b73f33; }
+        .alert-action-btn:hover { filter: brightness(0.8); }
+        .alert-action-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
 
         /* =========================================================
            МОДАЛЬНОЕ ОКНО ПОЛУЧЕНИЯ ПРЕДМЕТА (На весь экран)
@@ -660,7 +654,7 @@
                     <div class="utility-icon"><img src="images/icon/icon_games.png" alt="Games"></div>
                     <div class="utility-icon"><img src="images/icon/win_is_games.png" alt="Win"></div>
                     
-                    <!-- УВЕДОМЛЕНИЕ (Иконка с цифрой 1) -->
+                    <!-- УВЕДОМЛЕНИЕ (Большая кнопка с цифрой 1 справа) -->
                     <div class="notification-wrapper" onclick="openAlerts()">
                         <img src="images/icon/notification.png" alt="Notifications">
                         <div class="notification-badge">1</div>
@@ -732,21 +726,22 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ALERTS (Всплывает рядом с иконкой) -->
+    <!-- МОДАЛЬНОЕ ОКНО ALERTS (Уменьшено, под кнопкой) -->
     <div class="modal-alerts-container" id="alertsModal">
         <div class="modal-alerts">
             <div class="modal-alerts-header">
                 <div class="modal-alerts-title">ALERTS (1)</div>
-                <div class="modal-alerts-close" onclick="closeAlerts()">×</div>
+                <!-- Крестик с твоей картинкой close.png -->
+                <button class="modal-alerts-close" onclick="closeAlerts()">
+                    <img src="images/icon/close.png" alt="Close">
+                </button>
             </div>
             <div class="modal-alerts-body">
                 <span>YOU HAVE NEW ITEMS!</span>
                 <div class="modal-alerts-actions">
-                    <button class="alert-action-btn btn-eye" onclick="openItemFound()">
-                        <img src="images/icon/icon_games.png" alt="View">
-                    </button>
-                    <button class="alert-action-btn btn-close-alert" onclick="closeAlerts()">
-                        <img src="images/icon/turn_off.png" alt="Close" style="filter: invert(1);">
+                    <!-- Кнопка с твоим eye.png -->
+                    <button class="alert-action-btn" onclick="openItemFound()">
+                        <img src="images/icon/eye.png" alt="View">
                     </button>
                 </div>
             </div>
