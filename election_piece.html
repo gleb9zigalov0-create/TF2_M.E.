@@ -103,5 +103,35 @@
             <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./main_menu.html" class="btn-back"><span>&lt;&lt;</span> BACK</a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const tracks = [
+                "sounds/main_menu/1.mp3",
+                "sounds/main_menu/2.mp3",
+                "sounds/main_menu/3.mp3"
+            ];
+            let currentTrackIndex = 0;
+            const audioPlayer = document.getElementById('bgMusic');
+
+            const savedTrack = localStorage.getItem('tf2_current_track');
+            if (savedTrack !== null) {
+                currentTrackIndex = parseInt(savedTrack, 10);
+            } else {
+                currentTrackIndex = Math.floor(Math.random() * tracks.length);
+            }
+
+            // Автоматический запуск музыки сразу после загрузки страницы
+            setTimeout(() => {
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                audioPlayer.play().catch(() => {
+                    setTimeout(() => {
+                        audioPlayer.play().catch(() => {});
+                    }, 500);
+                });
+            }, 300);
+        });
+    </script>
 </body>
 </html>
