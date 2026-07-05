@@ -498,6 +498,27 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             
+            // =========================================================
+            // СИСТЕМА ФЛАГА ЗАГРУЗКИ (Лоадинг только при первом входе)
+            // =========================================================
+            const hasLoaded = sessionStorage.getItem('tf2_loaded');
+
+            if (hasLoaded === 'true') {
+                // Если уже загружались раньше — убираем лоадинг и показываем меню МГНОВЕННО
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('mainUI').classList.add('loaded');
+            } else {
+                // Если заходим в первый раз — ставим флаг и запускаем лоадинг на 2 секунды
+                sessionStorage.setItem('tf2_loaded', 'true');
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('mainUI').classList.add('loaded');
+                }, 2000);
+            }
+            
+            // =========================================================
+            // ФОН И ПЕРСОНАЖ
+            // =========================================================
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
             document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${backgrounds[Math.floor(Math.random() * backgrounds.length)]}')`;
 
@@ -519,12 +540,18 @@
                 charImg.style.right = "30px";
             }
 
+            // =========================================================
+            // УРОВЕНЬ И МЕДАЛЬ
+            // =========================================================
             let playerLevel = 4; 
             const medalImg = document.getElementById('levelMedal');
             document.getElementById('playerLevelText').innerText = `УРОВЕНЬ: ${playerLevel}`;
             medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
+            // =========================================================
+            // МУЗЫКА (Продолжается с того же места)
+            // =========================================================
             const tracks = [
                 "sounds/main_menu/1.mp3",
                 "sounds/main_menu/2.mp3",
@@ -543,24 +570,18 @@
                 currentTrackIndex = Math.floor(Math.random() * tracks.length);
             }
 
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('mainUI').classList.add('loaded');
-                
-                audioPlayer.src = tracks[currentTrackIndex];
-                audioPlayer.load();
-                
-                // Если есть сохранённое время, ставим на это время!
-                if (savedTime !== null) {
-                    audioPlayer.currentTime = parseFloat(savedTime);
-                }
+            audioPlayer.src = tracks[currentTrackIndex];
+            audioPlayer.load();
+            
+            if (savedTime !== null) {
+                audioPlayer.currentTime = parseFloat(savedTime);
+            }
 
-                audioPlayer.play().catch(() => {
-                    setTimeout(() => {
-                        audioPlayer.play().catch(() => {});
-                    }, 500);
-                });
-            }, 300);
+            audioPlayer.play().catch(() => {
+                setTimeout(() => {
+                    audioPlayer.play().catch(() => {});
+                }, 500);
+            });
 
             // Каждую секунду сохраняем время
             setInterval(() => {
@@ -573,7 +594,7 @@
                 e.preventDefault();
                 currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
                 localStorage.setItem('tf2_current_track', currentTrackIndex);
-                localStorage.setItem('tf2_current_time', 0); // Сбрасываем время для нового трека
+                localStorage.setItem('tf2_current_time', 0);
                 
                 audioPlayer.src = tracks[currentTrackIndex];
                 audioPlayer.load();
