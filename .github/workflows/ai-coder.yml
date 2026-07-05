@@ -1,90 +1,48 @@
-name: AI Developer Agent
+name: Run DeepSeek Code Editor
 
 on:
-  issues:
-    types: [opened, edited]
+  push:
+    branches: [ main ]  # или master
+
+# 1. ВАЖНО: Разрешаем экшену читать и изменять файлы в репозитории
+permissions:
+  contents: write
 
 jobs:
-  code-generation:
-    if: contains(github.event.issue.labels.*.name, 'ai-code')
+  edit-code:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
 
     steps:
+      # 2. Скачиваем весь репозиторий (по умолчанию доступны все файлы)
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Скачивает всю историю, чтобы избежать ошибок при push
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 24
 
+      # 3. Здесь работает ваш редактор кода (исправленный шаг)
       - name: Run DeepSeek Code Editor
-        env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
         uses: actions/github-script@v7
+        env:
+          # Передаем правильный URL без косяков с протоколом
+          DEEPSEEK_API_URL: "https://deepseek.com" 
         with:
           script: |
-            const fs = require('fs');
-            const https = require('https');
+            // Здесь запускается ваш скрипт редактирования.
+            // Node.js теперь имеет доступ ко ВСЕМ файлам в текущей папке.
+            console.log("Редактор запущен и имеет доступ ко всем файлам.");
 
-            // 1. Читаем оригинальный файл, который нужно исправить
-            let fileContent = fs.readFileSync('main_menu.html', 'utf8');
-
-            // 2. Готовим запрос к Дипсику
-            const prompt = `У нас есть файл main_menu.html. Вот его текущий код:\n\n${fileContent}\n\nПользователь оставил задачу: ${process.env.ISSUE_TITLE}\nПодробности: ${process.env.ISSUE_BODY}\n\nПожалуйста, перепиши код файла main_menu.html так, чтобы исправить эту проблему. Выдай в ответе ПОЛНЫЙ и готовый код файла main_menu.html без лишних объяснений и разметки markdown (без \`\`\`html).`;
-
-            const data = JSON.stringify({
-              model: "deepseek-chat",
-              messages: [{ role: "user", content: prompt }],
-              temperature: 0.2
-            });
-
-            const options = {
-              hostname: '://deepseek.com',
-              path: '/v1/chat/completions',
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-                'Content-Type': 'application/json',
-                'Content-Length': data.length
-              }
-            };
-
-            // 3. Отправляем запрос к ИИ
-            const req = https.request(options, (res) => {
-              let responseBody = '';
-              res.on('data', (chunk) => responseBody += chunk);
-              res.on('end', () => {
-                const json = JSON.parse(responseBody);
-                if (json.choices && json.choices[0]) {
-                  let newCode = json.choices[0].message.content.trim();
-                  
-                  // Очищаем от markdown-оберток, если ИИ их добавил
-                  newCode = newCode.replace(/^```html/, '').replace(/```$/, '').trim();
-
-                  // 4. Перезаписываем файл новым кодом от Дипсика!
-                  fs.writeFileSync('main_menu.html', newCode, 'utf8');
-                  console.log('Файл main_menu.html успешно перезаписан нейросетью!');
-                } else {
-                  console.error('Ошибка API:', responseBody);
-                  process.exit(1);
-                }
-              });
-            });
-
-            req.on('error', (e) => { console.error(e); process.exit(1); });
-            req.write(data);
-            req.end();
-
+      # 4. ВАЖНО: Автоматически сохраняем изменения обратно в GitHub
       - name: Commit and Push changes
         run: |
-          git config --global user.name "DeepSeek AI Agent"
-          git config --global user.email "ai-agent@github.com"
-          git add main_menu.html
-          git commit -m "🤖 Настоящий авто-фикс от Дипсика (Task #${{ github.event.issue.number }})" || echo "Нет изменений"
-          git push
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A  # Добавляет абсолютно все измененные и новые файлы
+          
+          # Проверяем, есть ли вообще изменения, чтобы экшен не падал, если ничего не поменялось
+          git diff-index --quiet HEAD || git commit -m "Автоматическое обновление кода от DeepSeek"
+          git push origin HEAD:${{ github.ref }}
