@@ -496,7 +496,6 @@
     </div>
 
     <script>
-        // Используем старый добрый синтаксис для 100% совместимости с телефонами
         document.addEventListener("DOMContentLoaded", function() {
             
             var backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
@@ -527,7 +526,6 @@
             medalImg.src = 'images/levels/' + playerLevel + '.png';
             medalImg.onerror = function() { this.style.display = 'none'; };
 
-            // Управление плеером в iframe
             var musicBtn = document.getElementById('musicToggle');
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
