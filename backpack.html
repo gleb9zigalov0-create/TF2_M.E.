@@ -68,11 +68,11 @@
 </head>
 <body>
 
-    <iframe src="player.html" style="width:0; height:0; border:none; position:absolute;"></iframe>
+    <audio id="bgMusic" loop></audio>
 
     <div class="ui-container">
         <div class="top-panel">
-            <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./main_menu.html" class="tab inactive">LOADOUT</a>
+            <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./election_piece.html" class="tab inactive">LOADOUT</a>
             <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./analytic.html" class="tab inactive">STATS</a>
         </div>
 
@@ -162,7 +162,8 @@
         </div>
 
         <div class="bottom-bar">
-            <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./main_menu.html" class="btn-back"><span>&lt;&lt;</span> BACK</a>
+            <!-- BACK ВЕДЁТ В ВЫБОР КЛАССОВ -->
+            <a href="https://gleb9zigalov0-create.github.io/TF2_M.E./election_piece.html" class="btn-back"><span>&lt;&lt;</span> BACK</a>
         </div>
     </div>
 
@@ -173,48 +174,47 @@
             element.classList.add('active');
         }
     </script>
+
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const tracks = [
-            "sounds/main_menu/1.mp3",
-            "sounds/main_menu/2.mp3",
-            "sounds/main_menu/3.mp3"
-        ];
-        let currentTrackIndex = 0;
-        const audioPlayer = document.getElementById('bgMusic');
+        document.addEventListener("DOMContentLoaded", function() {
+            const tracks = [
+                "sounds/main_menu/1.mp3",
+                "sounds/main_menu/2.mp3",
+                "sounds/main_menu/3.mp3"
+            ];
+            let currentTrackIndex = 0;
+            const audioPlayer = document.getElementById('bgMusic');
 
-        const savedTrack = localStorage.getItem('tf2_current_track');
-        const savedTime = localStorage.getItem('tf2_current_time');
+            const savedTrack = localStorage.getItem('tf2_current_track');
+            const savedTime = localStorage.getItem('tf2_current_time');
 
-        if (savedTrack !== null) {
-            currentTrackIndex = parseInt(savedTrack, 10);
-        } else {
-            currentTrackIndex = Math.floor(Math.random() * tracks.length);
-        }
-
-        setTimeout(() => {
-            audioPlayer.src = tracks[currentTrackIndex];
-            audioPlayer.load();
-            
-            // Восстанавливаем позицию!
-            if (savedTime !== null) {
-                audioPlayer.currentTime = parseFloat(savedTime);
+            if (savedTrack !== null) {
+                currentTrackIndex = parseInt(savedTrack, 10);
+            } else {
+                currentTrackIndex = Math.floor(Math.random() * tracks.length);
             }
 
-            audioPlayer.play().catch(() => {
-                setTimeout(() => {
-                    audioPlayer.play().catch(() => {});
-                }, 500);
-            });
-        }, 300);
+            setTimeout(() => {
+                audioPlayer.src = tracks[currentTrackIndex];
+                audioPlayer.load();
+                
+                if (savedTime !== null) {
+                    audioPlayer.currentTime = parseFloat(savedTime);
+                }
 
-        // Сохраняем время каждую секунду
-        setInterval(() => {
-            if (!audioPlayer.paused) {
-                localStorage.setItem('tf2_current_time', audioPlayer.currentTime);
-            }
-        }, 1000);
-    });
-</script>
+                audioPlayer.play().catch(() => {
+                    setTimeout(() => {
+                        audioPlayer.play().catch(() => {});
+                    }, 500);
+                });
+            }, 300);
+
+            setInterval(() => {
+                if (!audioPlayer.paused) {
+                    localStorage.setItem('tf2_current_time', audioPlayer.currentTime);
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
