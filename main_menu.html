@@ -541,18 +541,20 @@
                 currentTrackIndex = Math.floor(Math.random() * tracks.length);
             }
 
+            // ИЗМЕНИЛИ ТАЙМЕР НА 300 мс, ЧТОБЫ СОВПАДАЛО С ДРУГИМИ СТРАНИЦАМИ
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('mainUI').classList.add('loaded');
                 
                 audioPlayer.src = tracks[currentTrackIndex];
                 audioPlayer.load();
+                // Принудительный запуск с повторной попыткой
                 audioPlayer.play().catch(() => {
                     setTimeout(() => {
                         audioPlayer.play().catch(() => {});
                     }, 500);
                 });
-            }, 2000);
+            }, 300); 
 
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
