@@ -544,13 +544,20 @@
             }
 
             setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById('mainUI').classList.add('loaded');
-                
-                audioPlayer.src = tracks[currentTrackIndex];
-                audioPlayer.load();
-                audioPlayer.play().catch(() => {});
-            }, 2000);
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('mainUI').classList.add('loaded');
+    
+    audioPlayer.src = tracks[currentTrackIndex];
+    audioPlayer.load();
+    
+    // Принудительно включаем при загрузке страницы
+    audioPlayer.play().catch(() => {
+        // Если сразу не получилось, пробуем еще раз чуть позже
+        setTimeout(() => {
+            audioPlayer.play().catch(() => {});
+        }, 500);
+    });
+}, 2000);
 
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
