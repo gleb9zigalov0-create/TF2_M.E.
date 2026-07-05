@@ -127,6 +127,11 @@
             height: auto;
             display: block;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .logo-img:active {
+            transform: scale(0.95);
         }
 
         .find-game-container {
@@ -231,7 +236,7 @@
         }
 
         /* =========================================================
-           ALERTS (Маленькое окно, русский язык, прозрачные кнопки)
+           ALERTS
            ========================================================= */
         .modal-alerts-container {
             display: none;
@@ -266,8 +271,6 @@
             font-weight: 800;
             letter-spacing: 0.5px;
         }
-        
-        /* Круглый серый крестик */
         .modal-alerts-close {
             background: #7d746d;
             border: none;
@@ -286,7 +289,6 @@
         }
         .modal-alerts-close:hover { filter: brightness(1.2); }
 
-        /* Серый блок внутри */
         .modal-alerts-body {
             background: #d4cec4;
             border: 1px solid #c1b9af;
@@ -303,8 +305,6 @@
             display: flex;
             gap: 4px;
         }
-        
-        /* Кнопки теперь полностью прозрачные, без фона */
         .alert-action-btn {
             background: transparent;
             border: none;
@@ -350,21 +350,8 @@
             flex-direction: column;
         }
 
-        .modal-item-title {
-            color: #e8e5df;
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        .modal-item-subtitle {
-            color: #e89867;
-            font-size: 18px;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .modal-item-title { color: #e8e5df; font-size: 28px; font-weight: 800; letter-spacing: 1px; text-align: center; margin-bottom: 5px; }
+        .modal-item-subtitle { color: #e89867; font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 15px; }
 
         .modal-item-content {
             display: flex;
@@ -393,11 +380,7 @@
             align-items: center;
             justify-content: center;
         }
-        .modal-item-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
+        .modal-item-image img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .modal-item-details {
             flex: 1.2;
@@ -535,41 +518,12 @@
         }
         .settings-icon-inside:hover { opacity: 0.7; }
 
-        .player-level-text {
-            color: #b5b2ac;
-            font-size: 10px;
-            font-weight: bold;
-            margin-right: 32px; 
-            display: block;
-        }
+        .player-level-text { color: #b5b2ac; font-size: 10px; font-weight: bold; margin-right: 32px; display: block; }
 
-        .player-progress-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: #b5b2ac;
-            margin-bottom: 2px;
-        }
+        .player-progress-row { display: flex; justify-content: space-between; font-size: 10px; color: #b5b2ac; margin-bottom: 2px; }
 
-        .progress-bar-bg {
-            background: #1f1d1a;
-            height: 6px;
-            border-radius: 1px;
-            overflow: hidden;
-            width: 100%;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 0;
-            width: 45%;
-            background: repeating-linear-gradient(
-                90deg,
-                #3d8b38 0px,
-                #3d8b38 4px,
-                #1f1d1a 4px,
-                #1f1d1a 6px
-            );
-        }
+        .progress-bar-bg { background: #1f1d1a; height: 6px; border-radius: 1px; overflow: hidden; width: 100%; }
+        .progress-bar-fill { height: 100%; border-radius: 0; width: 45%; background: repeating-linear-gradient(90deg, #3d8b38 0px, #3d8b38 4px, #1f1d1a 4px, #1f1d1a 6px); }
 
         .panel-title { font-size: 12px; color: #e8e5df; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; border-bottom: 1px solid #47443e; padding-bottom: 3px; display: flex; justify-content: space-between; }
         .panel-body { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: #b5b2ac; }
@@ -645,7 +599,8 @@
 
         <div class="top-header">
             <div class="logo-container">
-                <img src="images/icon/LOGO_heading.png" alt="Team Fortress 2" class="logo-img">
+                <!-- ПАСХАЛКА: Нажатие на логотип меняет фон и персонажа -->
+                <img src="images/icon/LOGO_heading.png" alt="Team Fortress 2" class="logo-img" onclick="randomizeBgAndChar()">
             </div>
             <div style="display: flex; flex-direction: column; align-items: flex-end;">
                 <div class="find-game-container">
@@ -733,18 +688,16 @@
         </div>
     </div>
 
-    <!-- ALERTS (Русский, прозрачные кнопки) -->
+    <!-- ALERTS -->
     <div class="modal-alerts-container" id="alertsModal">
         <div class="modal-alerts">
             <div class="modal-alerts-header">
                 <div class="modal-alerts-title">УВЕДОМЛЕНИЯ (1)</div>
-                <!-- Круглый серый крестик -->
                 <button class="modal-alerts-close" onclick="closeAlerts()">×</button>
             </div>
             <div class="modal-alerts-body">
                 <span>У ВАС ЕСТЬ НОВЫЕ ПРЕДМЕТЫ!</span>
                 <div class="modal-alerts-actions">
-                    <!-- Прозрачные кнопки -->
                     <button class="alert-action-btn" onclick="openItemFound()">
                         <img src="images/icon/eye.png" alt="View">
                     </button>
@@ -819,28 +772,54 @@
     </div>
 
     <script>
-        function openAlerts() {
-            document.getElementById('alertsModal').classList.add('active');
-        }
-        function closeAlerts() {
-            document.getElementById('alertsModal').classList.remove('active');
-        }
-        function openItemFound() {
-            closeAlerts();
-            document.getElementById('itemFoundModal').classList.add('active');
-        }
-        function closeItemFound() {
-            document.getElementById('itemFoundModal').classList.remove('active');
+        // =========================================================
+        // ФУНКЦИЯ ДЛЯ ПАСХАЛКИ (Меняет фон и персонажа по клику)
+        // =========================================================
+        function randomizeBgAndChar() {
+            const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
+            const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+            document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${randomBg}')`;
+
+            const classes = [
+                "Scout.png", "Soldier.png", "Pyro.png", "Demoman.png",
+                "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
+            ];
+            const randomClass = classes[Math.floor(Math.random() * classes.length)];
+            const charImg = document.getElementById('menuCharacter');
+            charImg.src = `images/class/red/${randomClass}`;
+            charImg.style.height = "150%";
+            charImg.style.bottom = "-55%";
+
+            if (["Soldier.png", "Demoman.png", "Heavy.png", "Engineer.png"].includes(randomClass)) {
+                charImg.style.right = "-60px";
+            } else if (randomClass === "Spy.png" || randomClass === "Sniper.png") {
+                charImg.style.right = "70px";
+            } else {
+                charImg.style.right = "30px";
+            }
+
+            // Сохраняем в localStorage, чтобы при возврате через BACK сохранились новые
+            localStorage.setItem('tf2_saved_bg', randomBg);
+            localStorage.setItem('tf2_saved_class', randomClass);
         }
 
+        // =========================================================
+        // ALERTS
+        // =========================================================
+        function openAlerts() { document.getElementById('alertsModal').classList.add('active'); }
+        function closeAlerts() { document.getElementById('alertsModal').classList.remove('active'); }
+        function openItemFound() { closeAlerts(); document.getElementById('itemFoundModal').classList.add('active'); }
+        function closeItemFound() { document.getElementById('itemFoundModal').classList.remove('active'); }
+
+        // =========================================================
+        // НАСТРОЙКИ
+        // =========================================================
         function openSettings() {
             document.getElementById('settingsModal').style.display = 'flex';
             document.getElementById('nicknameInput').value = localStorage.getItem('tf2_nickname') || 'USERLIVERFULL';
             updateModeButtons();
         }
-        function closeSettings() {
-            document.getElementById('settingsModal').style.display = 'none';
-        }
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
         document.getElementById('settingsModal').addEventListener('click', function(e) {
             if (e.target === this) closeSettings();
         });
@@ -872,6 +851,9 @@
             closeSettings();
         }
 
+        // =========================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // =========================================================
         document.addEventListener("DOMContentLoaded", function() {
             
             const savedNick = localStorage.getItem('tf2_nickname');
@@ -885,9 +867,13 @@
             medalImg.src = `images/levels/${playerLevel}.png`;
             medalImg.onerror = function() { this.style.display = 'none'; };
 
+            // Восстанавливаем фоны и персонажа из памяти
             const backgrounds = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg"];
             let savedBg = localStorage.getItem('tf2_saved_bg');
-            if (!savedBg) { savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)]; localStorage.setItem('tf2_saved_bg', savedBg); }
+            if (!savedBg) {
+                savedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                localStorage.setItem('tf2_saved_bg', savedBg);
+            }
             document.getElementById('menuBackground').style.backgroundImage = `url('images/background/${savedBg}')`;
 
             const classes = [
@@ -895,7 +881,10 @@
                 "Heavy.png", "Engineer.png", "Medic.png", "Sniper.png", "Spy.png"
             ];
             let savedClass = localStorage.getItem('tf2_saved_class');
-            if (!savedClass) { savedClass = classes[Math.floor(Math.random() * classes.length)]; localStorage.setItem('tf2_saved_class', savedClass); }
+            if (!savedClass) {
+                savedClass = classes[Math.floor(Math.random() * classes.length)];
+                localStorage.setItem('tf2_saved_class', savedClass);
+            }
             const charImg = document.getElementById('menuCharacter');
             charImg.src = `images/class/red/${savedClass}`;
             charImg.style.height = "150%"; charImg.style.bottom = "-55%";
