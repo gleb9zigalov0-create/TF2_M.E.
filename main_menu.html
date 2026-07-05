@@ -535,31 +535,45 @@
             const musicBtn = document.getElementById('musicToggle');
 
             const savedTrack = localStorage.getItem('tf2_current_track');
+            const savedTime = localStorage.getItem('tf2_current_time');
+
             if (savedTrack !== null) {
                 currentTrackIndex = parseInt(savedTrack, 10);
             } else {
                 currentTrackIndex = Math.floor(Math.random() * tracks.length);
             }
 
-            // ИЗМЕНИЛИ ТАЙМЕР НА 300 мс, ЧТОБЫ СОВПАДАЛО С ДРУГИМИ СТРАНИЦАМИ
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('mainUI').classList.add('loaded');
                 
                 audioPlayer.src = tracks[currentTrackIndex];
                 audioPlayer.load();
-                // Принудительный запуск с повторной попыткой
+                
+                // Если есть сохранённое время, ставим на это время!
+                if (savedTime !== null) {
+                    audioPlayer.currentTime = parseFloat(savedTime);
+                }
+
                 audioPlayer.play().catch(() => {
                     setTimeout(() => {
                         audioPlayer.play().catch(() => {});
                     }, 500);
                 });
-            }, 300); 
+            }, 300);
+
+            // Каждую секунду сохраняем время
+            setInterval(() => {
+                if (!audioPlayer.paused) {
+                    localStorage.setItem('tf2_current_time', audioPlayer.currentTime);
+                }
+            }, 1000);
 
             musicBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
                 localStorage.setItem('tf2_current_track', currentTrackIndex);
+                localStorage.setItem('tf2_current_time', 0); // Сбрасываем время для нового трека
                 
                 audioPlayer.src = tracks[currentTrackIndex];
                 audioPlayer.load();
