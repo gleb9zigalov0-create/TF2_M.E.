@@ -176,7 +176,7 @@
         .btn-power img { width: 18px; height: 18px; object-fit: contain; }
 
         /* =========================================================
-           КНОПКИ (TV, REVIEW, VIRUS) - ИСПРАВЛЕННЫЕ!
+           КНОПКИ (TV, REVIEW, VIRUS) - ИДЕАЛЬНЫЙ РАЗМЕР!
            ========================================================= */
         .top-utility-icons {
             display: flex;
@@ -199,7 +199,7 @@
             transition: all 0.2s;
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.5);
             position: relative;
-            padding: 2px; /* Добавили маленький внутренний отступ */
+            padding: 3px; /* Да, 3 пикселя отступа решают всё! */
         }
         .utility-btn:hover {
             background: rgba(80, 60, 40, 0.9);
@@ -212,8 +212,7 @@
         .utility-btn img {
             width: 100%;
             height: 100%;
-            /* ИДЕАЛЬНЫЙ ФИКС: Вписываем картинку целиком, не растягивая её фон */
-            object-fit: contain;
+            object-fit: scale-down;
         }
 
         .utility-btn:hover::after {
