@@ -270,15 +270,15 @@
         }
 
         /* =========================================================
-           ALERTS (сдвинуто вниз под кнопки, чуть меньше)
+           ALERTS (под кнопками, чуть меньше)
            ========================================================= */
         .modal-alerts-container {
             display: none;
             position: absolute;
             z-index: 9998;
-            top: 130px; /* Опущено ниже, чтобы не перекрывать иконки */
+            top: 130px;
             right: 0px;
-            width: 260px; /* Чуть уже */
+            width: 260px;
         }
         .modal-alerts-container.active {
             display: block;
@@ -301,7 +301,7 @@
         }
         .modal-alerts-title {
             color: #1a1816;
-            font-size: 14px; /* Чуть меньше */
+            font-size: 14px;
             font-weight: 800;
             letter-spacing: 0.5px;
         }
@@ -494,21 +494,21 @@
             position: relative;
         }
 
-          /* =========================================================
-           МЕДАЛЬ С ПОКАЧИВАНИЕМ И МАЛЕНЬКИМ «ЗЫНЬ» ПРИ КЛИКЕ
+        /* =========================================================
+           МЕДАЛЬ — ИДЕАЛЬНОЕ ПОКАЧИВАНИЕ И МАЛЕНЬКИЙ ДЗЫНЬ
            ========================================================= */
         .player-panel-wrap {
             display: flex;
             gap: 10px;
             align-items: center;
-            padding-left: 40px;
+            padding-left: 50px; /* Отодвигаем текст, чтобы медаль не наезжала */
         }
 
         .medal-wrapper {
             position: absolute;
-            left: -10px;
+            left: -5px; /* Жёсткая позиция */
             top: 50%;
-            transform: translateY(-50%) scale(1.8);
+            transform: translateY(-50%) scale(1.6); /* Фиксированный размер */
             width: 52px; 
             height: 52px;
             display: flex;
@@ -518,9 +518,8 @@
             border: none;
             z-index: 5;
             cursor: pointer;
-            /* Естественное покачивание (вверх-вниз + лёгкий поворот) */
-            animation: sway 2.8s ease-in-out infinite;
-            transform-origin: center bottom;
+            transform-origin: center center; /* Вращение строго из центра */
+            animation: gentleSway 3s ease-in-out infinite;
         }
         .medal-wrapper img {
             width: 100%;
@@ -528,33 +527,32 @@
             object-fit: contain;
             display: block;
             filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Покачивание — очень маленькое, как на цепочке */
-        @keyframes sway {
-            0% { transform: translateY(-50%) scale(1.8) rotate(0deg); }
-            25% { transform: translateY(-50%) scale(1.8) rotate(1.5deg) translateX(2px); }
-            75% { transform: translateY(-50%) scale(1.8) rotate(-1.5deg) translateX(-2px); }
-            100% { transform: translateY(-50%) scale(1.8) rotate(0deg); }
+        /* МИКРО-ПОКАЧИВАНИЕ (почти незаметно, но живо) */
+        @keyframes gentleSway {
+            0% { transform: translateY(-50%) scale(1.6) rotate(0deg); }
+            25% { transform: translateY(-50%) scale(1.6) rotate(1deg); }
+            75% { transform: translateY(-50%) scale(1.6) rotate(-1deg); }
+            100% { transform: translateY(-50%) scale(1.6) rotate(0deg); }
         }
 
-        /* КЛИК — маленький «зынь» (уменьшение всего на 10%) */
+        /* ДЗЫНЬ — только лёгкое сжатие, без смещений */
         .medal-wrapper.clicked img {
             animation: none;
-            transform: scale(0.9) !important;
+            transform: scale(0.85) !important; /* Уменьшаем, а не увеличиваем! */
             transition: transform 0.08s ease-out;
         }
         .medal-wrapper.clicked {
             animation: none;
         }
         .medal-wrapper.clicked-finish img {
-            transform: scale(1.8) !important;
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(1) !important;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .medal-wrapper.clicked-finish {
-            transform: translateY(-50%) scale(1.8) !important;
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: gentleSway 3s ease-in-out infinite;
         }
 
         .player-info-box {
@@ -706,7 +704,7 @@
             <div class="left-column-container">
                 <div class="inner-panel">
                     <div class="player-panel-wrap">
-                        <!-- МЕДАЛЬ С АНИМАЦИЕЙ И КЛИКОМ -->
+                        <!-- МЕДАЛЬ С МИКРО-ПОКАЧИВАНИЕМ И МАЛЕНЬКИМ ДЗЫНЕМ -->
                         <div class="medal-wrapper" id="medalWrapper" onclick="playMedalAnimation()">
                             <img id="levelMedal" src="" alt="Rank">
                         </div>
@@ -766,7 +764,7 @@
         </div>
     </div>
 
-    <!-- ALERTS (Сдвинуты вниз и чуть меньше) -->
+    <!-- ALERTS -->
     <div class="modal-alerts-container" id="alertsModal">
         <div class="modal-alerts">
             <div class="modal-alerts-header">
@@ -851,7 +849,7 @@
 
     <script>
         // =========================================================
-        // АНИМАЦИЯ МЕДАЛИ (Покачивание + маленький «зынь» + звук)
+        // АНИМАЦИЯ МЕДАЛИ (Микро-покачивание + маленький дзынь)
         // =========================================================
         function playMedalAnimation() {
             const wrapper = document.getElementById('medalWrapper');
@@ -861,10 +859,10 @@
             sound.currentTime = 0;
             sound.play().catch(() => {});
 
-            // Маленький «зынь»: уменьшаем всего на 10%
+            // Дзынь: лёгкое сжатие
             wrapper.classList.add('clicked');
             
-            // Через 80мс возвращаем
+            // Через 80мс возврат с пружинкой
             setTimeout(() => {
                 wrapper.classList.remove('clicked');
                 wrapper.classList.add('clicked-finish');
@@ -873,7 +871,7 @@
             // Через 250мс возвращаем покачивание
             setTimeout(() => {
                 wrapper.classList.remove('clicked-finish');
-            }, 330);
+            }, 300);
         }
 
         // =========================================================
