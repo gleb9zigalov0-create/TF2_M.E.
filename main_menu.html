@@ -494,8 +494,8 @@
             position: relative;
         }
 
-        /* =========================================================
-           МЕДАЛЬ С АНИМАЦИЕЙ ЛЕВИТАЦИИ И КЛИКА
+          /* =========================================================
+           МЕДАЛЬ С ПОКАЧИВАНИЕМ И МАЛЕНЬКИМ «ЗЫНЬ» ПРИ КЛИКЕ
            ========================================================= */
         .player-panel-wrap {
             display: flex;
@@ -518,8 +518,9 @@
             border: none;
             z-index: 5;
             cursor: pointer;
-            /* Анимация левитации: плавное движение вверх-вниз */
-            animation: float 2.5s ease-in-out infinite;
+            /* Естественное покачивание (вверх-вниз + лёгкий поворот) */
+            animation: sway 2.8s ease-in-out infinite;
+            transform-origin: center bottom;
         }
         .medal-wrapper img {
             width: 100%;
@@ -527,33 +528,33 @@
             object-fit: contain;
             display: block;
             filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Пружинка при клике */
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Ключевые кадры для левитации */
-        @keyframes float {
-            0% { transform: translateY(-50%) scale(1.8) translateY(0px); }
-            50% { transform: translateY(-50%) scale(1.8) translateY(-6px); }
-            100% { transform: translateY(-50%) scale(1.8) translateY(0px); }
+        /* Покачивание — очень маленькое, как на цепочке */
+        @keyframes sway {
+            0% { transform: translateY(-50%) scale(1.8) rotate(0deg); }
+            25% { transform: translateY(-50%) scale(1.8) rotate(1.5deg) translateX(2px); }
+            75% { transform: translateY(-50%) scale(1.8) rotate(-1.5deg) translateX(-2px); }
+            100% { transform: translateY(-50%) scale(1.8) rotate(0deg); }
         }
 
-        /* Класс для анимации клика (уменьшение + возврат) */
+        /* КЛИК — маленький «зынь» (уменьшение всего на 10%) */
         .medal-wrapper.clicked img {
-            animation: none; /* Останавливаем левитацию на время клика */
-            transform: scale(0.7) !important; /* Резкое уменьшение */
-            transition: transform 0.1s ease-out;
+            animation: none;
+            transform: scale(0.9) !important;
+            transition: transform 0.08s ease-out;
         }
         .medal-wrapper.clicked {
-            animation: none; /* Останавливаем левитацию */
-            transition: transform 0.1s ease-out;
+            animation: none;
         }
         .medal-wrapper.clicked-finish img {
-            transform: scale(1.8) !important; /* Возврат к исходному размеру */
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(1.8) !important;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .medal-wrapper.clicked-finish {
             transform: translateY(-50%) scale(1.8) !important;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .player-info-box {
@@ -850,29 +851,29 @@
 
     <script>
         // =========================================================
-        // АНИМАЦИЯ МЕДАЛИ (Левитация + клик + звук)
+        // АНИМАЦИЯ МЕДАЛИ (Покачивание + маленький «зынь» + звук)
         // =========================================================
         function playMedalAnimation() {
             const wrapper = document.getElementById('medalWrapper');
             const sound = document.getElementById('dingSound');
             
-            // Проигрываем звук
+            // Звук
             sound.currentTime = 0;
             sound.play().catch(() => {});
 
-            // Добавляем класс клика (уменьшение)
+            // Маленький «зынь»: уменьшаем всего на 10%
             wrapper.classList.add('clicked');
             
-            // Через 100мс убираем класс клика и добавляем "возврат"
+            // Через 80мс возвращаем
             setTimeout(() => {
                 wrapper.classList.remove('clicked');
                 wrapper.classList.add('clicked-finish');
-            }, 100);
+            }, 80);
 
-            // Через 300мс убираем класс возврата, чтобы левитация возобновилась
+            // Через 250мс возвращаем покачивание
             setTimeout(() => {
                 wrapper.classList.remove('clicked-finish');
-            }, 400);
+            }, 330);
         }
 
         // =========================================================
