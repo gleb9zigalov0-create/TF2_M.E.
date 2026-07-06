@@ -270,7 +270,7 @@
         }
 
         /* =========================================================
-           ALERTS (под кнопками, чуть меньше)
+           ALERTS (под кнопками)
            ========================================================= */
         .modal-alerts-container {
             display: none;
@@ -495,20 +495,20 @@
         }
 
         /* =========================================================
-           МЕДАЛЬ — ИДЕАЛЬНОЕ ПОКАЧИВАНИЕ И МАЛЕНЬКИЙ ДЗЫНЬ
+           МЕДАЛЬ
            ========================================================= */
         .player-panel-wrap {
             display: flex;
             gap: 10px;
             align-items: center;
-            padding-left: 50px; /* Отодвигаем текст, чтобы медаль не наезжала */
+            padding-left: 50px;
         }
 
         .medal-wrapper {
             position: absolute;
-            left: -5px; /* Жёсткая позиция */
+            left: -5px;
             top: 50%;
-            transform: translateY(-50%) scale(1.6); /* Фиксированный размер */
+            transform: translateY(-50%) scale(1.6);
             width: 52px; 
             height: 52px;
             display: flex;
@@ -518,7 +518,7 @@
             border: none;
             z-index: 5;
             cursor: pointer;
-            transform-origin: center center; /* Вращение строго из центра */
+            transform-origin: center center;
             animation: gentleSway 3s ease-in-out infinite;
         }
         .medal-wrapper img {
@@ -530,7 +530,6 @@
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* МИКРО-ПОКАЧИВАНИЕ (почти незаметно, но живо) */
         @keyframes gentleSway {
             0% { transform: translateY(-50%) scale(1.6) rotate(0deg); }
             25% { transform: translateY(-50%) scale(1.6) rotate(1deg); }
@@ -538,10 +537,9 @@
             100% { transform: translateY(-50%) scale(1.6) rotate(0deg); }
         }
 
-        /* ДЗЫНЬ — только лёгкое сжатие, без смещений */
         .medal-wrapper.clicked img {
             animation: none;
-            transform: scale(0.85) !important; /* Уменьшаем, а не увеличиваем! */
+            transform: scale(0.85) !important;
             transition: transform 0.08s ease-out;
         }
         .medal-wrapper.clicked {
@@ -652,9 +650,9 @@
 </head>
 <body>
 
-    <!-- АУДИО ДЛЯ ЗВУКА МЕДАЛИ -->
+    <!-- АУДИО -->
     <audio id="dingSound" src="sounds/miscellaneous/ding.mp3" preload="auto"></audio>
-
+    <audio id="notificationSound" src="sounds/miscellaneous/notification.mp3" preload="auto"></audio>
     <audio id="bgMusic" loop></audio>
 
     <div class="loading-screen" id="loadingScreen">
@@ -704,7 +702,6 @@
             <div class="left-column-container">
                 <div class="inner-panel">
                     <div class="player-panel-wrap">
-                        <!-- МЕДАЛЬ С МИКРО-ПОКАЧИВАНИЕМ И МАЛЕНЬКИМ ДЗЫНЕМ -->
                         <div class="medal-wrapper" id="medalWrapper" onclick="playMedalAnimation()">
                             <img id="levelMedal" src="" alt="Rank">
                         </div>
@@ -849,26 +846,19 @@
 
     <script>
         // =========================================================
-        // АНИМАЦИЯ МЕДАЛИ (Микро-покачивание + маленький дзынь)
+        // АНИМАЦИЯ МЕДАЛИ
         // =========================================================
         function playMedalAnimation() {
             const wrapper = document.getElementById('medalWrapper');
             const sound = document.getElementById('dingSound');
-            
-            // Звук
             sound.currentTime = 0;
             sound.play().catch(() => {});
 
-            // Дзынь: лёгкое сжатие
             wrapper.classList.add('clicked');
-            
-            // Через 80мс возврат с пружинкой
             setTimeout(() => {
                 wrapper.classList.remove('clicked');
                 wrapper.classList.add('clicked-finish');
             }, 80);
-
-            // Через 250мс возвращаем покачивание
             setTimeout(() => {
                 wrapper.classList.remove('clicked-finish');
             }, 300);
@@ -907,10 +897,24 @@
         // =========================================================
         // ALERTS
         // =========================================================
-        function openAlerts() { document.getElementById('alertsModal').classList.add('active'); }
-        function closeAlerts() { document.getElementById('alertsModal').classList.remove('active'); }
-        function openItemFound() { closeAlerts(); document.getElementById('itemFoundModal').classList.add('active'); }
-        function closeItemFound() { document.getElementById('itemFoundModal').classList.remove('active'); }
+        let notificationPlayed = false; // Флаг, чтобы звук играл только один раз
+
+        function openAlerts() { 
+            document.getElementById('alertsModal').classList.add('active'); 
+        }
+
+        function closeAlerts() { 
+            document.getElementById('alertsModal').classList.remove('active'); 
+        }
+
+        function openItemFound() { 
+            closeAlerts(); 
+            document.getElementById('itemFoundModal').classList.add('active'); 
+        }
+
+        function closeItemFound() { 
+            document.getElementById('itemFoundModal').classList.remove('active'); 
+        }
 
         // =========================================================
         // НАСТРОЙКИ
@@ -1003,6 +1007,12 @@
                 setTimeout(() => {
                     document.getElementById('loadingScreen').classList.add('hidden');
                     document.getElementById('mainUI').classList.add('loaded');
+                    // ===== ЗВУК УВЕДОМЛЕНИЯ ПРИ ЗАГРУЗКЕ =====
+                    const notifSound = document.getElementById('notificationSound');
+                    notifSound.currentTime = 0;
+                    notifSound.play().catch(() => {});
+                    // Открываем уведомление автоматически
+                    document.getElementById('alertsModal').classList.add('active');
                 }, 2000);
             }
 
