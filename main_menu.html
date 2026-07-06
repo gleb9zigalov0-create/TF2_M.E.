@@ -897,7 +897,7 @@
         // =========================================================
         // ALERTS
         // =========================================================
-        let notificationPlayed = false; // Флаг, чтобы звук играл только один раз
+        let notificationSoundPlayed = false; // Флаг, чтобы звук играл только один раз
 
         function openAlerts() { 
             document.getElementById('alertsModal').classList.add('active'); 
@@ -914,6 +914,19 @@
 
         function closeItemFound() { 
             document.getElementById('itemFoundModal').classList.remove('active'); 
+        }
+
+        // Функция, которая проверяет, есть ли уведомление, и играет звук при клике
+        function tryPlayNotificationSound() {
+            if (!notificationSoundPlayed) {
+                const alerts = document.getElementById('alertsModal');
+                if (alerts.classList.contains('active')) {
+                    const sound = document.getElementById('notificationSound');
+                    sound.currentTime = 0;
+                    sound.play().catch(() => {});
+                    notificationSoundPlayed = true;
+                }
+            }
         }
 
         // =========================================================
@@ -1002,19 +1015,28 @@
             if (hasLoaded === 'true') {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 document.getElementById('mainUI').classList.add('loaded');
+                // Если уже загружено, проверяем уведомление
+                if (document.getElementById('alertsModal').classList.contains('active')) {
+                    notificationSoundPlayed = false; // Сбрасываем, чтобы при клике сыграло
+                }
             } else {
                 sessionStorage.setItem('tf2_loaded', 'true');
                 setTimeout(() => {
                     document.getElementById('loadingScreen').classList.add('hidden');
                     document.getElementById('mainUI').classList.add('loaded');
-                    // ===== ЗВУК УВЕДОМЛЕНИЯ ПРИ ЗАГРУЗКЕ =====
-                    const notifSound = document.getElementById('notificationSound');
-                    notifSound.currentTime = 0;
-                    notifSound.play().catch(() => {});
                     // Открываем уведомление автоматически
                     document.getElementById('alertsModal').classList.add('active');
                 }, 2000);
             }
+
+            // Слушаем первый клик по странице, чтобы сыграть звук
+            const firstClickHandler = function() {
+                tryPlayNotificationSound();
+                document.removeEventListener('click', firstClickHandler);
+                document.removeEventListener('touchstart', firstClickHandler);
+            };
+            document.addEventListener('click', firstClickHandler);
+            document.addEventListener('touchstart', firstClickHandler);
 
             const tracks = [
                 "sounds/main_menu/1.mp3",
